@@ -45,37 +45,44 @@ export const SidebarToggle = () => {
 export const NavHeader = ({label}) =>
     <div className="sidebar-heading"> {label || ''}</div>
 
-export const NavItem = ({label, icon, to}) =>
+export const NavItem = ({label, icon, to, isActive, badge}) =>
     <Nav.Item>
-        <NavLink exact className='nav-link' to={to|| '/'}>
+        <NavLink exact className='nav-link' isActive={isActive || null} to={to|| '/'} onClick={()=> Sidebar.hideDrops()}>
             <i className={`fas fa-fw ${icon || ''}`}/>
+            {badge && <span className={"badge badge-counter" + (badge.type ? badge.type: ' badge-danger')}>{badge.text}</span>}
             <span> {label || ''}</span>
         </NavLink>
     </Nav.Item>
 
 
-export const NavDrop = ({label, icon, children}) => {
+export const NavDrop = ({label, icon, children, isActive, badge}) => {
     const [show, setShow] = useState(false);
 
     drops.push({show, setShow});
-    return (<Nav.Item>
-    <Nav.Link data-toggle="collapse" onClick={() => {
+    return (<li className="nav-item">
+    <NavLink isActive={isActive} className={"nav-link" + (!show?" collapsed":'')} to='#' data-toggle="collapse" onClick={(e) => {
+        e.preventDefault();
         Sidebar.hideDrops();
-        setShow(!show)
-    }}>
+        setShow(!show);
+    }} >
         <i className={`fas fa-fw ${icon || ''}`}/>
+        {badge && <span className={"badge badge-counter" + (badge.type ? badge.type: ' badge-danger')}>{badge.text}</span>}
         <span> {label || ''}</span>
-    </Nav.Link>
-    <div className={"collapse" + (show?" show":'')}>
+    </NavLink>
+    <div className={"collapse" + (show?" show":'')} data-parent="#accordionSidebar">
         <div className="bg-white py-2 collapse-inner rounded">
             {children}
         </div>
     </div>
-    </Nav.Item>)
+    </li>)
 }
 
 export const DropHeader = ({label}) =>
     <h6 className="collapse-header"> {label}</h6>
 
-export const DropItem = ({label, to, icon}) =>
-    <NavLink exact className="collapse-item" to={to|| '#'}>{icon && <i className={'fa fa-fw '+icon} aria-hidden="true"/>} {label || ''}</NavLink>
+export const DropItem = ({label, to, icon, isActive, badge}) =>
+    <NavLink exact className="collapse-item" isActive={isActive || null} to={to|| '#'} onClick={Sidebar.hideDrops}>
+        {icon && <i className={'fa fa-fw '+icon} aria-hidden="true"/>} {label || ''}
+        {badge && <span className={"badge badge-counter ml-1" + (badge.type ? badge.type: ' badge-danger')} style={{float:'right'}}>{badge.text}</span>}
+    </NavLink>
+

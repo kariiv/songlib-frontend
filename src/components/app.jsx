@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Route, Switch } from "react-router-dom";
 
 import Sidebar, {
     SidebarHead,
@@ -6,98 +7,129 @@ import Sidebar, {
     NavItem,
     NavHeader,
     NavDrop,
-    DropHeader,
+    // DropHeader,
     DropItem,
     SidebarToggle
 } from './frame/sidebar';
 
 import Toolbar from './frame/toolbar';
 
-import NotFound from './pages/404';
-import Sheet from './pages/sheet'
+import SheetController from './pages/sheet/sheetController'
+import Home from './pages/home'
+import Tag from './pages/tag'
 
 import {Container} from 'react-bootstrap'
 import '../assets/scss/frame/sb-admin-2.scss';
+import queryString from 'query-string';
+
+import Player from '../assets/app/Player';
+
+import {capitalize} from '../config';
+
+const PlaylistsBuilder = ({ player }) => {
+    const strategies = Object.values(player.playlistStrategies)
+    return (
+        <React.Fragment>
+            <NavHeader label='Playlists'/>
+
+            { strategies.length !== 0 && strategies.map(strat => {
+                const playlists = Object.values(strat.playlists);
+                if (playlists.length > 1) return (
+                    <NavDrop
+                        key={strat.name}
+                        icon={strat.icon}
+                        label={capitalize(strat.name)}
+                        badge={{text: playlists.length}}
+                        isActive={(_, location) => {
+                            const {c} = queryString.parse(location.search);
+                            return c === strat.name.toLowerCase()
+                        }}
+                    >
+                        {playlists.map((pl)=>
+                            <DropItem
+                                key={pl.name}
+                                label={pl.name}
+                                badge={{text: pl.songs.length}}
+                                isActive={(match, location) => {
+                                    const {c, p} = queryString.parse(location.search);
+                                    return c === strat.name.toLowerCase() && p === pl.name.toLowerCase()
+                                }}
+                                to={{
+                                    pathname: "/play/",
+                                    search: `?c=${strat.name.toLowerCase()}&p=${pl.name.toLowerCase()}`
+                                }}
+                        />)}
+                    </NavDrop>
+                );
+                if (playlists.length === 1) return (
+                    <NavItem
+                        key={strat.name}
+                        icon={strat.icon}
+                        label={capitalize(strat.name)}
+                        badge={{text: playlists[0].songs.length}}
+                        isActive={(match, location) => {
+                            const {c} = queryString.parse(location.search);
+                            return c === strat.name.toLowerCase()
+                        }}
+                        to={{pathname: "/play/", search: `?c=${strat.name.toLowerCase()}&p=${playlists[0].name.toLowerCase()}`}}
+                    />
+                );
+                return null
+            })}
+
+        </React.Fragment>
+    )
+}
+
+
 
 class App extends Component {
+
     state = {
-        songs: [],
-        tags: [],
-        selected: null,
-    }
-
-    componentDidMount() {
-
-    }
-
-    loadSongs = () => {
-
-    }
-
-    handleSelection = (id) => {
-
+        player: new Player(this)
     }
 
     render() {
         return (
             <React.Fragment>
-                <Sidebar toggled={false}>
+                <Sidebar toggled={true}>
                     <SidebarHead brand={<>Songs <sup>2.0</sup></>} icon='fa-music'/>
-                    <NavItem icon='fa-home' label='Home' to='/'/>
+                    {/*<NavItem icon='fa-home' label='Home' to='/'/>*/}
                     <Devider/>
-                    <NavHeader label='Playlists'/>
-
-                    <NavItem icon='fa-music' label='All' to='/all'/>
-
-                    <NavItem icon='fa-history' label='Latest' to='/latest'/>
-
-                    <NavDrop icon='fa-tags' label='Tags'>
-                        <DropItem label='Eesti'/>
-                        <DropItem label='English'/>
-                        <DropItem label='Christmas'/>
-                        <DropItem label='E2P'/>
-                    </NavDrop>
-
-                    <NavDrop icon='fa-graduation-cap' label='Difficulty'>
-                        <DropItem label='Easy' icon='fa-star-o'/>
-                        <DropItem label='Medium' icon='fa-star-half'/>
-                        <DropItem label='Hard' icon='fa-star'/>
-                    </NavDrop>
-
-                    <NavDrop icon='fa-th-list' label='Collections'>
-                        <DropHeader label='Latest'/>
-                        <DropItem label='Best GA Aftekas'/>
-                        <DropItem label='BEST' />
-                        <DropItem label='Hard' />
-                        <DropHeader label='Yours'/>
-                        <DropItem label='BEST' />
-                        <DropItem label='Saunaõhtu' />
-                    </NavDrop>
-
+                    <PlaylistsBuilder player={this.state.player}/>
                     <Devider/>
-
                     <NavHeader label='Utilities'/>
-                    <NavItem icon='fa-paper-plane' label='Add new song' to='/new'/>
+                    <NavItem
+                        icon='fa-paper-plane'
+                        label='Add new song'
+                        to='/play/?edit=true'
+                        isActive={(_, location) => {
+                            const {c, p, s, edit} = queryString.parse(location.search);
+                            return !c && !p && !s && edit
+                        }}
+                    />
                     <NavItem icon='fa-tag' label='Add new tag' to='/tag'/>
 
                     <Devider className='mb-0'/>
 
                     <NavItem icon='fa-cog' label='Settings' to='/setting'/>
-                    <NavDrop icon='fa-wrench' label='Theme' >
-                        <DropItem label='Easy' icon='fa-star-o'/>
-                        <DropItem label='Medium' icon='fa-star-half'/>
-                    </NavDrop>
+                    <NavDrop icon='fa-wrench' label='Theme' />
 
                     <Devider/>
                     <SidebarToggle/>
                 </Sidebar>
 
                 <div id="content-wrapper" className="d-flex flex-column" onClick={Sidebar.hideDrops}>
-                    <div id="content">
+                    <div id="content" >
                         <Toolbar sideToggle={Sidebar.toggle}/>
                         <Container fluid>
-                            {/*<NotFound/>*/}
-                            <Sheet/>
+                            <Switch>
+                                <Route exact path='/' component={Home}/>
+                                <Route exact path='/play/' render={(props) => <SheetController player={this.state.player} {...props}/>}/>
+                                <Route exact path='/tag/' render={(props) => <Tag player={this.state.player} {...props}/>}/>
+                                <Route exact path='/settings/' render={() => null}/>
+                                <Route exact path='/theme/' render={() => null}/>
+                            </Switch>
                         </Container>
                     </div>
 
@@ -110,9 +142,7 @@ class App extends Component {
                         </Container>
                     </footer>
                 </div>
-                <a className="scroll-to-top rounded" href="#page-top">
-                    <i className="fas fa-angle-up"/>
-                </a>
+
             </React.Fragment>
         )
     }

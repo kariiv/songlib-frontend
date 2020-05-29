@@ -6,9 +6,8 @@ import './assets/fonts/nunito.css';
 import './assets/scss/main.scss';
 
 import { Router } from "react-router-dom";
-import { createBrowserHistory } from "history";
+import history from "./history";
 
-const history = createBrowserHistory();
 
 ReactDOM.render(
     <Router history={history}>
