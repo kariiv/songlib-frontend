@@ -14,7 +14,7 @@ export default ({player, history}) => {
     const qSong = player.getQueryResult(c, p, s);
 
     if (edit) {
-        if (qSong) {
+        if (s && qSong) {
             if (!qSong.s.lyrics) return <h3>Waiting lyrics</h3>
             return <Edit data={qSong} player={player}/>
         }
