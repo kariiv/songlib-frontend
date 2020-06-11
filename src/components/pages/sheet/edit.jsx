@@ -5,6 +5,8 @@ import Select from 'react-select';
 import { saveSong, deleteSong } from '../../../actions/songs'
 
 import history from "../../../history";
+import Rating from 'react-rating'
+import { rankRange } from "../../../assets/app/playlist/PlaylistStrategy";
 
 export default class Edit extends Component {
 
@@ -30,18 +32,22 @@ export default class Edit extends Component {
 
     handleSave = () => {
         const { title, artist, tags, lyrics, link, rank } = this.state;
+        const id = this.props.data ? this.props.data.s.id : '';
+        const cb = this.props.data ?
+            () => this.props.player.reloadLibrary() :
+            (id) => this.props.player.reloadLibrary(() => history.push('/play/?s='+id))
 
         saveSong({
-            id: (this.props.data ? this.props.data.id : ''),
+            id,
             title: title || '',
             artist: artist || '',
             tags: tags.length > 0 ? tags.join(' '):'',
             lyrics: lyrics || '',
             link: link || '',
             rank: rank || 0,
-        })
+        }, cb)
     }
-    handleDelete = () => { deleteSong(this.props.data.s.id) }
+    handleDelete = () => { deleteSong(this.props.data.s.id, () => this.props.player.reloadLibrary()) }
 
     render() {
         const {data, player} = this.props;
@@ -53,10 +59,10 @@ export default class Edit extends Component {
             <React.Fragment>
                 {data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name} <i
                     className='fas fa-angle-right'/> {data.s.title}</h5>}
-                {!data && <h5>New song</h5>}
+                {!data && <h4>New song</h4>}
                 <Row>
                     <Col xs={12} sm={8} md={6} lg={4} className='mb-3'>
-                        <Form.Group className=''>
+                        <Form.Group className='mb-1'>
                             <Form.Control
                                 className='edit-form'
                                 size="lg"
@@ -73,6 +79,13 @@ export default class Edit extends Component {
                                 value={this.state.artist}
                                 onChange={(e)=>this.setState({artist:e.target.value})}
                             />
+                            <Form.Control
+                                className='edit-form'
+                                type="text"
+                                placeholder="Link"
+                                value={this.state.link}
+                                onChange={(e)=>this.setState({link:e.target.value})}
+                            />
                         </Form.Group>
                         Tags:
                         <div style={{color:'black'}}>
@@ -84,6 +97,13 @@ export default class Edit extends Component {
                                 onChange={(v)=> v ? this.setState({tags: v.map(o => o.value)}) : this.setState({tags:[]})}
                             />
                         </div>
+                        <Rating
+                            start={-1} stop={4}
+                            initialRating={this.state.rank}
+                            onChange={(v) => this.setState({rank:v}) }
+                            emptySymbol="fas fa-fw fa-star text-gray-300"
+                            fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
+                        /> { rankRange[this.state.rank] }
                     </Col>
                 </Row>
                 <textarea

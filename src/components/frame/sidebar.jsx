@@ -45,9 +45,12 @@ export const SidebarToggle = () => {
 export const NavHeader = ({label}) =>
     <div className="sidebar-heading"> {label || ''}</div>
 
-export const NavItem = ({label, icon, to, isActive, badge}) =>
-    <Nav.Item>
-        <NavLink exact className='nav-link' isActive={isActive || null} to={to|| '/'} onClick={()=> Sidebar.hideDrops()}>
+export const NavItem = ({label, icon, to, isActive, badge, onClick}) =>
+    <Nav.Item onClick={onClick}>
+        <NavLink exact className='nav-link' isActive={isActive || null} to={to|| '/'} onClick={(e)=> {
+            if (onClick) e.preventDefault();
+            Sidebar.hideDrops()
+        }}>
             <i className={`fas fa-fw ${icon || ''}`}/>
             {badge && <span className={"badge badge-counter" + (badge.type ? badge.type: ' badge-danger')}>{badge.text}</span>}
             <span> {label || ''}</span>

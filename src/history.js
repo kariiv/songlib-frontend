@@ -1,2 +1,4 @@
 import { createBrowserHistory } from "history";
-export default createBrowserHistory();
+import {baseName} from "./config";
+
+export default createBrowserHistory({ basename: baseName });

@@ -5,12 +5,16 @@ import './assets/fonts/fontawesome2/all.css';
 import './assets/fonts/nunito.css';
 import './assets/scss/main.scss';
 
-import { Router } from "react-router-dom";
+import { Router, BrowserRouter } from "react-router-dom";
 import history from "./history";
+
+import { baseName } from "./config";
 
 
 ReactDOM.render(
-    <Router history={history}>
-        <App />
-    </Router>,
+        <BrowserRouter basename={ baseName }>
+            <Router history={history}>
+                <App />
+            </Router>
+        </BrowserRouter>,
     document.getElementById('wrapper'));

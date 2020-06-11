@@ -1,4 +1,39 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Song collecting app
+
+New version of forntend with updated backend.
+
+## Features
+
+- Title, Author, Lyrics, Link, Tags, Rank, Time
+- Create/Edit/Delete song
+- Rank song by difficulty
+- Autoscroll
+- Transpose
+- Search
+- Playlist strategies:
+  - All
+  - Artist
+  - Tag
+  - Link
+  - Rank
+  - History
+
+## Todo
+
+- Create/Edit/Delete tag
+- Local history after 1,5min
+- Manual reload button
+- Messages
+- Create/Edit/Delete collection
+- Add songs to collection
+- Remove songs from collection
+- Playlist strategies:
+  - Collection
+- Sorting
+  - Artist
+  - Title
+  - Rank
+  - WordCountSorter (Future)
 
 ## Available Scripts
 
@@ -19,21 +54,3 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify

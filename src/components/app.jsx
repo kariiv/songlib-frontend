@@ -25,9 +25,78 @@ import queryString from 'query-string';
 import Player from '../assets/app/Player';
 
 import {capitalize} from '../config';
+import history from "../history";
+
+class App extends Component {
+
+    state = {
+        player: new Player(this)
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <Sidebar toggled={true}>
+                    <SidebarHead brand={<>Songs <sup>2.0</sup></>} icon='fa-music'/>
+                    <Devider/>
+                    <PlaylistsBuilder player={this.state.player}/>
+                    <Devider/>
+                    <NavHeader label='Utilities'/>
+                    <SortBuilder player={this.state.player}/>
+                    <NavItem
+                        icon='fa-paper-plane'
+                        label='Add new song'
+                        to='/play/?edit=true'
+                        isActive={(_, location) => {
+                            const {c, p, s, edit} = queryString.parse(location.search);
+                            return !c && !p && !s && edit
+                        }}
+                    />
+                    <NavItem icon='fa-tag' label='Tag manager' to='/tag'/>
+
+                    <Devider className='mb-0'/>
+
+                    <NavItem icon='fa-cog' label='Settings' to='/settings'/>
+                    <NavItem icon='fa-redo' label='Refresh' onClick={this.state.player.init} />
+                    <NavItem icon='fa-info' label='Info' onClick={()=>console.log('Sry!')} />
+
+                    <Devider/>
+                    <SidebarToggle/>
+                </Sidebar>
+
+                <div id="content-wrapper" className="d-flex flex-column" onClick={Sidebar.hideDrops}>
+                    <div id="content" >
+                        <Toolbar sideToggle={Sidebar.toggle} player={this.state.player}/>
+                        <Container fluid>
+                            <Switch>
+                                <Route exact path='/' render={(props) => <Home player={this.state.player} {...props}/>}/>
+                                <Route exact path='/play/' render={(props) => <SheetController player={this.state.player} {...props}/>}/>
+                                <Route exact path='/tag/' render={(props) => <Tag player={this.state.player} {...props}/>}/>
+                                <Route exact path='/settings/' render={() => null}/>
+                                <Route exact path='/theme/' render={() => null}/>
+                            </Switch>
+                        </Container>
+                    </div>
+
+
+                    <footer className="sticky-footer bg-white">
+                        <Container className="my-auto">
+                            <div className="copyright text-center my-auto">
+                                <span>Copyright &copy; Mr.Toruabi 2020</span>
+                            </div>
+                        </Container>
+                    </footer>
+                </div>
+
+            </React.Fragment>
+        )
+    }
+}
 
 const PlaylistsBuilder = ({ player }) => {
     const strategies = Object.values(player.playlistStrategies)
+    const { sort } = queryString.parse(history.location.search);
+
     return (
         <React.Fragment>
             <NavHeader label='Playlists'/>
@@ -56,9 +125,9 @@ const PlaylistsBuilder = ({ player }) => {
                                 }}
                                 to={{
                                     pathname: "/play/",
-                                    search: `?c=${strat.name.toLowerCase()}&p=${pl.name.toLowerCase()}`
+                                    search: `?c=${strat.name.toLowerCase()}&p=${pl.name.toLowerCase()}${sort?'&sort='+sort:''}`
                                 }}
-                        />)}
+                            />)}
                     </NavDrop>
                 );
                 if (playlists.length === 1) return (
@@ -71,7 +140,7 @@ const PlaylistsBuilder = ({ player }) => {
                             const {c} = queryString.parse(location.search);
                             return c === strat.name.toLowerCase()
                         }}
-                        to={{pathname: "/play/", search: `?c=${strat.name.toLowerCase()}&p=${playlists[0].name.toLowerCase()}`}}
+                        to={{pathname: "/play/", search: `?c=${strat.name.toLowerCase()}&p=${playlists[0].name.toLowerCase()}${sort?'&sort='+sort:''}`}}
                     />
                 );
                 return null
@@ -81,70 +150,39 @@ const PlaylistsBuilder = ({ player }) => {
     )
 }
 
+const SortBuilder = ({ player }) => {
+    const sorts = Object.values(player.sorts)
+    const {c, p} = queryString.parse(history.location.search)
+    const searchPath = player.getQueryUrl({c, p})
+    return (
+        <React.Fragment>
+            <NavDrop
+                icon='fa-sort'
+                label='Sorting'
+                badge={{text: sorts.length}}
+                isActive={() => true}
+            >
+                { sorts.length !== 0 && sorts.map((sorting, index) => {
+                    return (
+                        <DropItem
+                            key={sorting.id}
+                            label={sorting.name}
+                            isActive={(match, location) => {
+                                const {sort} = queryString.parse(location.search);
+                                if (index === 0 && !sort) return true;
+                                return sort === sorting.id.toLowerCase()
+                            }}
+                            to={{
+                                pathname: "/play/",
+                                search: `${searchPath}&sort=${sorting.id}`
+                            }}
+                        />
+                    );
+                })}
+            </NavDrop>
 
-
-class App extends Component {
-
-    state = {
-        player: new Player(this)
-    }
-
-    render() {
-        return (
-            <React.Fragment>
-                <Sidebar toggled={true}>
-                    <SidebarHead brand={<>Songs <sup>2.0</sup></>} icon='fa-music'/>
-                    {/*<NavItem icon='fa-home' label='Home' to='/'/>*/}
-                    <Devider/>
-                    <PlaylistsBuilder player={this.state.player}/>
-                    <Devider/>
-                    <NavHeader label='Utilities'/>
-                    <NavItem
-                        icon='fa-paper-plane'
-                        label='Add new song'
-                        to='/play/?edit=true'
-                        isActive={(_, location) => {
-                            const {c, p, s, edit} = queryString.parse(location.search);
-                            return !c && !p && !s && edit
-                        }}
-                    />
-                    <NavItem icon='fa-tag' label='Add new tag' to='/tag'/>
-
-                    <Devider className='mb-0'/>
-
-                    <NavItem icon='fa-cog' label='Settings' to='/setting'/>
-                    <NavDrop icon='fa-wrench' label='Theme' />
-
-                    <Devider/>
-                    <SidebarToggle/>
-                </Sidebar>
-
-                <div id="content-wrapper" className="d-flex flex-column" onClick={Sidebar.hideDrops}>
-                    <div id="content" >
-                        <Toolbar sideToggle={Sidebar.toggle}/>
-                        <Container fluid>
-                            <Switch>
-                                <Route exact path='/' component={Home}/>
-                                <Route exact path='/play/' render={(props) => <SheetController player={this.state.player} {...props}/>}/>
-                                <Route exact path='/tag/' render={(props) => <Tag player={this.state.player} {...props}/>}/>
-                                <Route exact path='/settings/' render={() => null}/>
-                                <Route exact path='/theme/' render={() => null}/>
-                            </Switch>
-                        </Container>
-                    </div>
-
-
-                    <footer className="sticky-footer bg-white">
-                        <Container className="my-auto">
-                            <div className="copyright text-center my-auto">
-                                <span>Copyright &copy; Mr.Toruabi 2020</span>
-                            </div>
-                        </Container>
-                    </footer>
-                </div>
-
-            </React.Fragment>
-        )
-    }
+        </React.Fragment>
+    )
 }
+
 export default App;

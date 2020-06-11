@@ -5,12 +5,16 @@ class PlaylistStrategy  {
         this.name = name.toLowerCase();
         this.icon = icon;
         this.MIN = MIN_PLAYLIST_SIZE;
-        this.playlists = {}
+        if (!this.playlists) this.playlists = {}
         this.makePlaylists()
     }
 
     makePlaylists() { // [ {name, [songs]}, ... ]
         throw new Error('Playlist function not implemented!')
+    }
+
+    refreshPlaylist() {
+        throw new Error('Refresh function not implemented!')
     }
 
     getPlaylist(name) {
@@ -94,27 +98,29 @@ export class LinkStrategy extends PlaylistStrategy  {
     }
 }
 
+export const rankRange = {
+    0: "Unk",
+    1: 'Learning',
+    2: 'Play',
+    3: 'Sing',
+    4: 'PlaySing'
+}
+
+
 export class RankStrategy extends PlaylistStrategy  {
-    constructor(player, name, MIN_PLAYLIST_SIZE) {
-        super('Difficulty', 'fa-graduation-cap', MIN_PLAYLIST_SIZE)
+    constructor(player) {
+        super(player, 'Difficulty', 'fa-graduation-cap', 0)
     }
 
     makePlaylists() {
         if (!this.player.songs) throw new Error('No songs included');
         this.playlists = {}
 
-        const range = {
-            0: "Unk",
-            1: 'Sing and Play',
-            2: 'Play',
-            3: 'Sing',
-            4: 'Learning'
-        }
-
         const songlist = Object.values(this.player.songs)
-        for (const n of Object.keys(range)) {
-            let songs = songlist.filter(s => s.level === n).map(s => s.id);
-            if (songs.length >= this.MIN) this.playlists[range[n].toLowerCase()] = { name: range[n], songs }
+        for (const n of Object.keys(rankRange)) {
+            const nr = parseInt(n)
+            let songs = songlist.filter(s => s.rank === nr).map(s => s.id);
+            if (songs.length >= this.MIN) this.playlists[rankRange[n].toLowerCase()] = { name: rankRange[n], songs }
         }
     }
 }
@@ -136,13 +142,13 @@ export class CollectionStrategy extends PlaylistStrategy  {
 }
 
 export class HistoryStrategy extends PlaylistStrategy  {
-    constructor(player, LIMIT) {
-        super(player,'History','fa-history', LIMIT)
+    constructor(player) {
+        super(player,'History','fa-history', 0)
     }
 
     get playlists() {
-        if (!this.player.history) throw new Error('No history included');
-        return { 'history': {name: this.name, songs: this.player.history } }
+        const hList = JSON.parse(localStorage.getItem('_h') || '[]')
+        return { 'history': {name: this.name, songs: hList.filter((v,i) => hList.indexOf(v) === i) } }
     }
     makePlaylists() {}
 }

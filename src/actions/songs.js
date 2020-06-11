@@ -15,7 +15,9 @@ export const getSong = (id, cb) => {
         .then(json => cb(json));
 }
 
-export const deleteSong = (id) => {
+export const deleteSong = (id, successCallback) => {
+    const formData = new FormData();
+    formData.append('id', id)
     Swal.fire({
         title: 'Delete song?',
         text: 'You wont be able to revert this!',
@@ -26,17 +28,9 @@ export const deleteSong = (id) => {
         confirmButtonText: 'Delete'
     }).then((result) => {
         if (result.value) {
-            save_song({id}, (result) => {
+            save_song(formData, (result) => {
                 console.log(result);
-                if (result) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: 'Your song has been deleted',
-                        showConfirmButton: false,
-                        timer: 1200,
-                    })
-                } else {
+                if (result.error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Not deleted!',
@@ -44,13 +38,22 @@ export const deleteSong = (id) => {
                         showConfirmButton: false,
                         timer: 1500,
                     })
+                } else {
+                    if (successCallback) successCallback()
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'Your song has been deleted',
+                        showConfirmButton: false,
+                        timer: 1200,
+                    })
                 }
             })
         }
     })
 }
 
-export const saveSong = (data) => {
+export const saveSong = (data, successCallback) => {
     const { id, title, artist, tags, link, lyrics, rank } = data;
     const formData = new FormData();
     formData.append('id', id)
@@ -88,6 +91,7 @@ export const saveSong = (data) => {
                         showConfirmButton: false,
                         timer: 1200,
                     })
+                    if (successCallback) successCallback(result.data)
                 }
             })
         }

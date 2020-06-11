@@ -4,6 +4,7 @@
   "private": true,
   "description": "Tab songs and make collections",
   "author": "Mr.Toruabi",
+  "homepage": "/~kariiv/music2/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",

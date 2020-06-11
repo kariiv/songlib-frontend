@@ -1,96 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, Component } from "react";
 
-const Toolbar = ({ sideToggle }) => {
-    const [search, setSearch] = useState('')
-    const [showSecond, setSecond] = useState(false)
+class Toolbar extends Component {
+    state = {
+        search: '',
+        second: false
+    }
 
-    return (
-        <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" style={{maxWidth: '100vw'}}>
-            <button className="btn btn-link d-md-none rounded-circle mr-3" onClick={sideToggle}>
-                <i className="fa fa-bars"/>
-            </button>
+    handleSearch = (e) => {
+        this.setState({ search: e.target.value})
+    }
 
-            <form className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                <div className="input-group">
-                    <input type="text"
-                           className="form-control bg-light border-0 small"
-                           placeholder="Search for..."
-                           value={search}
-                           onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <div className="input-group-append">
-                        <button className="btn btn-primary" type="button">
-                            <i className="fas fa-search fa-sm"/>
-                        </button>
+    handleClear = () => {
+        this.setState({search: '', second:false})
+    }
+
+    render() {
+        const { sideToggle, player } = this.props;
+        const { search, second } = this.state;
+        const searchRes = search ? player.searchSongs(search): [];
+
+        return (
+            <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" style={{maxWidth: '100vw'}}>
+                <button className="btn btn-link d-md-none rounded-circle mr-3" onClick={sideToggle}>
+                    <i className="fa fa-bars"/>
+                </button>
+
+                <form className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <div className="input-group">
+                        <input type="text"
+                               className="form-control bg-light border-0 small"
+                               placeholder="Search for..."
+                               value={search}
+                               onChange={this.handleSearch}
+                        />
+                        <div className="input-group-append">
+                            <button className="btn btn-primary" type="button">
+                                <i className="fas fa-search fa-sm"/>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                    <div className={"dropdown-list dropdown-menu shadow animated--grow-in scroll search" + (search && ' show')}>
+                        {!second && searchRes.map(s => <SongResult key={s.artist+s.title} doClear={this.handleClear} song={s} player={player} search={search}/>)}
+                    </div>
+                </form>
 
-                <div className={"dropdown-list dropdown-menu shadow animated--grow-in search" + (search && ' show')}>
-                    <SearchResult title='Nagu esimene kord!' description='Terminaator'/>
-                    <SearchResult title='Kuutõbine' description='Terminaator'/>
-                    <SearchResult title='Romule' description='Terminaator'/>
-                </div>
-            </form>
-
-            <ul className="navbar-nav ml-auto">
-                <li className="nav-item dropdown no-arrow d-sm-none">
-                    <span className="nav-link dropdown-toggle" id="searchDropdown" role="button" onClick={() => setSecond(!showSecond)}>
+                <ul className="navbar-nav ml-auto">
+                    <li className="nav-item dropdown no-arrow d-sm-none">
+                    <span className="nav-link dropdown-toggle" id="searchDropdown" role="button" onClick={() => this.setState({second: !this.state.second})}>
                         <i className="fas fa-search fa-fw"/>
                     </span>
 
-                    <div className={"dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" + (showSecond? ' show':'')}>
-                        <form className="form-inline mr-auto w-100 navbar-search">
-                            <div className="input-group">
-                                <input type="text"
-                                       className="form-control bg-light border-0 small"
-                                       placeholder="Search for..."
-                                       value={search}
-                                       onChange={(e) => setSearch(e.target.value)}
-                                />
-                                <div className="input-group-append">
-                                    <button className="btn btn-primary" type="button">
-                                        <i className="fas fa-search fa-sm"/>
-                                    </button>
+                        <div className={"dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" + (second? ' show':'')}>
+                            <form className="form-inline mr-auto w-100 navbar-search">
+                                <div className="input-group">
+                                    <input type="text"
+                                           className="form-control bg-light border-0 small"
+                                           placeholder="Search for..."
+                                           value={search}
+                                           onChange={this.handleSearch}
+                                    />
+                                    <div className="input-group-append">
+                                        <button className="btn btn-primary" type="button">
+                                            <i className="fas fa-search fa-sm"/>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={"dropdown-list dropdown-menu shadow animated--grow-in search" + (search && ' show')} style={{position:'initial'}}>
-                                <SearchResult title='Nagu esimene kord!' description='Terminaator'/>
-                                <SearchResult title='Kuutõbine' description='Terminaator'/>
-                                <SearchResult title='Romule' description='Terminaator'/>
-                            </div>
-                        </form>
-                    </div>
-                </li>
+                                <div className={"dropdown-list dropdown-menu shadow animated--grow-in search" + (search && ' show')} style={{position:'initial'}}>
+                                    {second && searchRes.map(s => <SongResult key={s.artist+s.title} song={s} player={player} doClear={this.handleClear} search={search}/>)}
+                                </div>
+                            </form>
+                        </div>
+                    </li>
 
-                <Messages/>
-            </ul>
-        </nav>
-    )
+                    <Messages/>
+                </ul>
+            </nav>
+        )
+    }
 }
+
 export default Toolbar;
 
-export const songSearch = ({search, setSearch, children}) =>
-    <form className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-        <div className="input-group">
-            <input type="text"
-                   className="form-control bg-light border-0 small"
-                   placeholder="Search for..."
-                   value={search}
-                   onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="input-group-append">
-                <button className="btn btn-primary" type="button">
-                    <i className="fas fa-search fa-sm"/>
-                </button>
-            </div>
-        </div>
-
-        <div className={"dropdown-list dropdown-menu shadow animated--grow-in search" + (search && ' show')}>
-            <SearchResult title='Nagu esimene kord!' description='Terminaator'/>
-            <SearchResult title='Kuutõbine' description='Terminaator'/>
-            <SearchResult title='Romule' description='Terminaator'/>
-        </div>
-    </form>
 
 const Messages = () => {
     // const [messages, setMessages] = useState([])
@@ -140,15 +130,45 @@ const Messages = () => {
     )
 }
 
+export const SongResult = ({song, active, search, player, doClear}) => {
+    return (
+        <span className="dropdown-item d-flex align-items-center" onClick={() => {
+            player.setSongAll(song.id);
+            doClear();
+        }}>
+            <div className={active && 'font-weight-bold'}>
+                <MarkupText search={search} text={song.title}/>
+                <div className="small text-gray-500"><MarkupText search={search} text={song.artist}/></div>
+            </div>
+        </span>
+    )
+}
+
 export const SearchResult = ({title, description, active}) => {
     const [short, setShort] = useState(true)
     return (
         <span className="dropdown-item d-flex align-items-center" onClick={() => setShort(!short)}>
             <div className={active && 'font-weight-bold'}>
-                <div className={short?"text-truncate":''}>{title}</div>
+                <div className={short?"text-truncate":''}>title</div>
                 <div className="small text-gray-500">{description}</div>
             </div>
         </span>
+    )
+}
+
+const MarkupText = ({ search, text }) => {
+    if (!search) return null
+    let start = text.search(new RegExp(search, "i"));
+    if (start === -1) return text;
+    return (
+        <React.Fragment>
+            {start > 0 && text.substr(0, start)}
+            <strong>{text.substr(start, search.length)}</strong>
+            {start + search.length < text.length && text.substr(
+                start + search.length,
+                text.length - search.length - start
+            )}
+        </React.Fragment>
     )
 }
 

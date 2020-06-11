@@ -9,7 +9,7 @@ export default (cb) => {
         },
         inputValue: '',
         showCancelButton: true,
-        confirmButtonText: 'Look up',
+        confirmButtonText: 'Confirm',
         showLoaderOnConfirm: true,
     }).then((result) => {
         if (result.isConfirmed) {
@@ -60,7 +60,6 @@ function sha256(ascii) {
         hash = hash.slice(0, 8);
 
         for (i = 0; i < 64; i++) {
-            let i2 = i + j;
             let w15 = w[i - 15], w2 = w[i - 2];
             let a = hash[0], e = hash[4];
             let temp1 = hash[7] +
