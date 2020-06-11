@@ -35,7 +35,7 @@ class Main extends Component {
                             <i className="fas fa-music text-gray-300"/> Recent
                         </h3>
                     </Card.Header>
-                    <Card.Body className='recent-list'>
+                    <Card.Body className='recent-list pb-0'>
                         <Row>
                             { history.map(id => {
                                 const song = player.getSongById(id);
@@ -91,7 +91,7 @@ class Main extends Component {
 const Joke = ({data}) => {
     return (<Col md={6} xl={4} className="mb-4">
         <Card className={"shadow h-100 border-left-primary"}>
-            <Card.Header className='pt-1 pb-1'>
+            <Card.Header className='pt-2 pb-1'>
                 <h4 className='m-0'>{nameConvert(data.n)}</h4>
             </Card.Header>
             <Card.Body className='pt-2 pb-2'>

@@ -6,6 +6,7 @@ New version of forntend with updated backend.
 
 - Title, Author, Lyrics, Link, Tags, Rank, Time
 - Create/Edit/Delete song
+- Local history
 - Rank song by difficulty
 - Autoscroll
 - Transpose
@@ -17,22 +18,22 @@ New version of forntend with updated backend.
   - Link
   - Rank
   - History
+- Sorting
+  - Artist
+  - Title
+  - Rank
+  - Time
+  - Difficulty
 
 ## Todo
 
 - Create/Edit/Delete tag
-- Local history after 1,5min
-- Manual reload button
 - Messages
 - Create/Edit/Delete collection
 - Add songs to collection
 - Remove songs from collection
 - Playlist strategies:
   - Collection
-- Sorting
-  - Artist
-  - Title
-  - Rank
   - WordCountSorter (Future)
 
 ## Available Scripts
