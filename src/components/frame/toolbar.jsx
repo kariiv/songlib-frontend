@@ -27,30 +27,33 @@ class Toolbar extends Component {
                 <button className="btn btn-link d-md-none rounded-circle mr-3" onClick={sideToggle}>
                     <i className="fa fa-bars"/>
                 </button>
+                <ul className="navbar-nav mr-auto">
+                    <li className="nav-item dropdown">
+                        <form>
+                            <div className="input-group">
+                                <input type="text"
+                                       className="form-control bg-light border-0 small"
+                                       placeholder="Search..."
+                                       value={search}
+                                       onChange={this.handleSearch}
+                                       ref={this.search}
+                                />
+                                <div className="input-group-append">
+                                    {!!!search && <button className="btn btn-primary" type="button" onClick={() => this.search.current.focus()}>
+                                        <i className="fas fa-search fa-sm"/>
+                                    </button>}
 
-                <form className="d-sm-inline-block form-inline ml-md-3 navbar-search">
-                    <div className="input-group">
-                        <input type="text"
-                               className="form-control bg-light border-0 small"
-                               placeholder="Search for..."
-                               value={search}
-                               onChange={this.handleSearch}
-                               ref={this.search}
-                        />
-                        <div className="input-group-append">
-                            {!!!search && <button className="btn btn-primary" type="button" onClick={() => this.search.current.focus()}>
-                                <i className="fas fa-search fa-sm"/>
-                            </button>}
-
-                            { !!search && <button className="btn btn-danger" type="button" onClick={() => this.setState({search: ''})}>
-                                <i className="fas fa-times fa-sm" style={{paddingLeft:'0.12rem', paddingRight: '0.13rem'}}/>
-                            </button>}
-                        </div>
-                    </div>
-                    <div className={"dropdown-list dropdown-menu shadow animated--grow-in scroll search" + (search && ' show')}>
-                        {searchRes.map(s => <SongResult key={s.artist+s.title} doClear={this.handleClear} song={s} player={player} search={search}/>)}
-                    </div>
-                </form>
+                                    { !!search && <button className="btn btn-danger" type="button" onClick={() => this.setState({search: ''})}>
+                                        <i className="fas fa-times fa-sm" style={{paddingLeft:'0.12rem', paddingRight: '0.13rem'}}/>
+                                    </button>}
+                                </div>
+                            </div>
+                            <div className={"dropdown-list dropdown-menu shadow animated--grow-in scroll search" + (search && ' show')}>
+                                {searchRes.map(s => <SongResult key={s.artist+s.title} doClear={this.handleClear} song={s} player={player} search={search}/>)}
+                            </div>
+                        </form>
+                    </li>
+                </ul>
             </nav>
         )
     }
