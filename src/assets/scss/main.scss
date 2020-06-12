@@ -1,6 +1,9 @@
 
 .search {
   left: auto !important;
+  @media (min-width: 576px) {
+    right: auto !important;
+  }
 }
 
 .sidebar .nav-item .nav-link.active {
