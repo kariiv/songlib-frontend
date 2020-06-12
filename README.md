@@ -4,13 +4,13 @@ New version of forntend with updated backend.
 
 ## Features
 
-- Title, Author, Lyrics, Link, Tags, Rank, Time
+- Title, Author, Lyrics, Link, Tags, Rank(difficulty), Time
 - Create/Edit/Delete song
 - Local history
-- Rank song by difficulty
 - Autoscroll
 - Transpose
 - Search
+- Video collapse card
 - Playlist strategies:
   - All
   - Artist

@@ -9,6 +9,12 @@ import Rating from 'react-rating'
 import { safari } from "../../../config";
 
 export default class Sheet extends Component {
+    static NEXT = 68;
+    static PREVIOUS = 65;
+    static RANDOM = 82;
+    static SCROLL = 32;
+    static TRANS_UP = 87;
+    static TRANS_DOWN = 83;
 
     state = {
         autoscroll: null,
@@ -16,9 +22,36 @@ export default class Sheet extends Component {
         showVideo: false
     }
 
+    handleKeyDown = (e) => {
+        if (e.shiftKey)
+            switch( e.keyCode ) {
+                case Sheet.TRANS_DOWN:
+                    this.handleTransposeDown()
+                    break;
+                case Sheet.TRANS_UP:
+                    this.handleTransposeUp()
+                    break;
+                case Sheet.SCROLL:
+                    this.handleScroll(e)
+                    break;
+                case Sheet.NEXT:
+                    this.handleNext(e)
+                    break;
+                case Sheet.PREVIOUS:
+                    this.handlePrev(e)
+                    break;
+                case Sheet.RANDOM:
+                    this.handleRand(e)
+                    break;
+                default:
+                    break;
+            }
+    }
+
     componentWillUnmount() {
         if (this.state.autoscroll !== null) this.handleScroll()
-        clearTimeout(this.historyTimeout)
+        clearTimeout(this.historyTimeout);
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -27,6 +60,7 @@ export default class Sheet extends Component {
     }
     componentDidMount() {
         this.makeHistoryTimeout();
+        document.addEventListener("keydown", this.handleKeyDown);
     }
 
     makeHistoryTimeout() {
@@ -75,6 +109,15 @@ export default class Sheet extends Component {
         if (this.state.autoscroll) this.handleScroll()
         this.setState({showVideo:false})
     }
+    handleTransposeDown = () => {
+        const {data, player} = this.props;
+        player.transposeDown(data.s)
+    }
+    handleTransposeUp = () => {
+        const {data, player} = this.props;
+        player.transposeUp(data.s)
+    }
+
 
     scroll = () => window.scrollBy(0, 1)
     scrollTop = () => window.scrollTo(0, 0)
@@ -84,7 +127,7 @@ export default class Sheet extends Component {
         const {c, p, s} = data;
 
         return (
-            <React.Fragment>
+            <div onKeyDown={()=>console.log('Test')}>
                 <h4>{capitalize(c.name)} <i className='fas fa-angle-right' /> {p.name}</h4>
                 <Row className='mb-2'>
                     <Col className='text-left align-self-start pl-1 pr-0'>
@@ -94,10 +137,10 @@ export default class Sheet extends Component {
                             <span className="btn-circle btn-primary shadow-sm" onClick={this.handleNext}>
                         <i className="fas fa-angle-right fa-sm text-white-50"/></span>
 
-                            <span className="btn-circle btn-sm btn-info shadow-sm ml-3" onClick={() => player.transposeDown(s)}>
+                            <span className="btn-circle btn-sm btn-info shadow-sm ml-3" onClick={this.handleTransposeDown}>
                         <i className="fas fa-angle-down fa-sm text-white-50"/></span>
                             <strong className='text-black mr-1 ml-1'>{s.transpose}</strong>
-                            <span className="btn-circle btn-sm btn-info shadow-sm" onClick={() => player.transposeUp(s)}>
+                            <span className="btn-circle btn-sm btn-info shadow-sm" onClick={this.handleTransposeUp}>
                         <i className="fas fa-angle-up fa-sm text-white-50"/></span>
                     </Col>
                 </Row>
@@ -139,7 +182,7 @@ export default class Sheet extends Component {
                     </span>
                 </span>
 
-            </React.Fragment>
+            </div>
         );
     }
 }

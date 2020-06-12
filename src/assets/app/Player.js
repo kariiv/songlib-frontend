@@ -209,6 +209,7 @@ class Player {
     transposeDown = (song) => this.transposeCount(song, -1);
 
     transposeCount(song, count) {
+        if (!song.display) return;
         song.transpose = MusicTheory.keepRangePlusNeg(song.transpose + count);
         // SetTranspose
         song.display = song.display.replace(

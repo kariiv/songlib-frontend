@@ -1,7 +1,6 @@
 
 .search {
   left: auto !important;
-  top: auto;
 }
 
 .sidebar .nav-item .nav-link.active {
@@ -88,6 +87,7 @@
   transition: width 100ms;
   min-height: 120px;
   background-color: black;
+  z-index: 5;
 }
 
 .recent-list {
