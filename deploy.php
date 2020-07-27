@@ -57,7 +57,7 @@ $myhome = '/home/kariiv';
 
 $commands = array(
 	'whoami',
-	'cd $myhome/songlib-frontend/',
+	'cd /home/kariiv/songlib-frontend/',
 	'git pull',
 	'git status',
 	'git submodule sync',
