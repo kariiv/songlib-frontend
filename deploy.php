@@ -53,7 +53,7 @@ flush();
 
 // Actually run the update
 
-$myhome = '/home/kariiv
+$myhome = '/home/kariiv';
 
 $commands = array(
 	'whoami',
