@@ -56,12 +56,20 @@ flush();
 $commands = array(
 	'echo $PWD',
 	'whoami',
-	'cd public_html/music2/',
+	'cd ~/public_html/music2/',
 	'git pull',
 	'git status',
 	'git submodule sync',
 	'git submodule update',
 	'git submodule status',
+	'rm -rf ./node_modules',
+	'npm install',
+	'npm run build',
+	'rm -rf ~/public_html/music2/',
+	'mkdir ~/public_html/music2',
+	'mv build/* ~/public_html/music2/',
+	'cp deploy.php ~/public_html/music2/',
+	'cp .htaccess ~/public_html/music2/',
     'echo "Done!"',
 );
 
