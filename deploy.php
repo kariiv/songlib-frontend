@@ -53,10 +53,11 @@ flush();
 
 // Actually run the update
 
+$myhome = '/home/kariiv
+
 $commands = array(
-	'echo $PWD',
 	'whoami',
-	'cd ~/public_html/music2/',
+	'cd $myhome/songlib-frontend/',
 	'git pull',
 	'git status',
 	'git submodule sync',
@@ -65,11 +66,11 @@ $commands = array(
 	'rm -rf ./node_modules',
 	'npm install',
 	'npm run build',
-	'rm -rf ~/public_html/music2/',
-	'mkdir ~/public_html/music2',
-	'mv build/* ~/public_html/music2/',
-	'cp deploy.php ~/public_html/music2/',
-	'cp .htaccess ~/public_html/music2/',
+	'rm -rf ../public_html/music2/',
+	'mkdir ../public_html/music2',
+	'mv build/* ../public_html/music2/',
+	'cp deploy.php ../public_html/music2/',
+	'cp .htaccess ../public_html/music2/',
     'echo "Done!"',
 );
 
