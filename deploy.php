@@ -53,24 +53,20 @@ flush();
 
 // Actually run the update
 
-$myhome = '/home/kariiv';
+$myhome = 'cd /home/kariiv/songlib-frontend/ && ';
 
 $commands = array(
 	'whoami',
-	'cd /home/kariiv/songlib-frontend/',
-	'git pull',
-	'git status',
-	'git submodule sync',
-	'git submodule update',
-	'git submodule status',
-	'rm -rf ./node_modules',
-	'npm install',
-	'npm run build',
-	'rm -rf ../public_html/music2/',
-	'mkdir ../public_html/music2',
-	'mv build/* ../public_html/music2/',
-	'cp deploy.php ../public_html/music2/',
-	'cp .htaccess ../public_html/music2/',
+	$myhome + 'git pull https://kariiv:thgLOJ1234@github.com/kariiv/songlib-frontend.git',
+	$myhome + 'git status',
+	$myhome + 'rm -rf ./node_modules',
+	$myhome + 'npm install',
+	$myhome + 'npm run build',
+	$myhome + 'rm -rf ../public_html/music2/',
+	$myhome + 'mkdir ../public_html/music2',
+	$myhome + 'mv build/* ../public_html/music2/',
+	$myhome + 'cp deploy.php ../public_html/music2/',
+	$myhome + 'cp .htaccess ../public_html/music2/',
     'echo "Done!"',
 );
 
@@ -90,7 +86,7 @@ foreach($commands AS $command){
 
 $log .= "\n";
 
-file_put_contents ('deploy-log.txt',$log,FILE_APPEND);
+file_put_contents ('/home/kariiv/log/deploy-log.txt',$log,FILE_APPEND);
 
 echo $output; 
 
