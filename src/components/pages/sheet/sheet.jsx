@@ -15,11 +15,14 @@ export default class Sheet extends Component {
     static SCROLL = 32;
     static TRANS_UP = 87;
     static TRANS_DOWN = 83;
+    static MAX_FONT = 24;
+    static MIN_FONT = 5;
 
     state = {
         autoscroll: null,
         iframe: false,
-        showVideo: false
+        showVideo: false,
+        fontSize: 12
     }
 
     handleKeyDown = (e) => {
@@ -101,6 +104,24 @@ export default class Sheet extends Component {
         this.handleSongChange(e)
         this.props.player.editSong(this.props.data)
     }
+    
+    handleSizeUp = () => {
+        const { fontSize } = this.state;
+        if (fontSize < Sheet.MAX_FONT)
+        this.setState({fontSize: fontSize + 1});
+    }
+    
+    handleSizeDown = () => {
+        const { fontSize } = this.state;
+        if (fontSize > Sheet.MIN_FONT)
+        this.setState({fontSize: fontSize - 1});
+    }
+    
+    copyToClipboard = (e) => {
+        this.lyrics.select();
+        document.execCommand(‘copy’);
+        e.target.focus();
+    }
 
     handleSongChange(e) {
         e.preventDefault()
@@ -118,12 +139,12 @@ export default class Sheet extends Component {
         player.transposeUp(data.s)
     }
 
-
     scroll = () => window.scrollBy(0, 1)
     scrollTop = () => window.scrollTo(0, 0)
 
     render() {
         const {data, player} = this.props;
+        const {showVideo} = this.state;
         const {c, p, s} = data;
 
         return (
@@ -157,14 +178,16 @@ export default class Sheet extends Component {
                     />
                     <div className="tags-text mb-0">{s.tags.map(t=> <span key={t} className="badge badge-primary ml-1">#{player.tags[t]}</span>)}</div>
                 </div>
-                <p className="lyrics" style={safari? {marginRight: '-7rem'}:{}}>{s.display}</p>
+                <p className="lyrics" ref={(lyrics) => this.lyrics = lyrics} style={ {marginRight: safari ? '-7rem' : “”, fontSize: this.state.fontSize}}>{s.display}</p>
 
-                { s.link && <Card className={"shadow border-left-primary video-card"} style={this.state.showVideo ?{}:{width:0}}>
+                { s.link && <Card className={"shadow border-left-primary video-card"} style={showVideo ?{}:{width:0}}>
                     <Card.Body className='p-0'>
-                        <span className="btn-circle btn-danger shadow-sm video-button" onClick={this.handleVideo}>
-                            <i className={"fas fa-sm text-white-50 " + (this.state.showVideo? 'fa-angle-right':'fa-angle-left')}/>
+                        <span className="btn-circle btn-danger shadow-sm video-button" 
+                        style={{marginLeft:showVideo? “-1.6rem”:”-2rem”}}
+                    onClick={this.handleVideo}>
+                            <i className={"fas fa-sm text-white-50 " + (showVideo? 'fa-angle-right':'fa-angle-left')}/>
                         </span>
-                        {(this.state.showVideo || this.state.iframe) && <iframe title='Yt' onLoad={() => this.setState({iframe: true})} frameBorder={0} width='100%'
+                        {(showVideo || this.state.iframe) && <iframe title='Yt' onLoad={() => this.setState({iframe: true})} frameBorder={0} width='100%'
                                  height={120} allowFullScreen={0} src={player.getYoutubeEmbed(s.link)} style={{marginBottom:-7}}/>}
                     </Card.Body>
                 </Card>}
@@ -181,7 +204,6 @@ export default class Sheet extends Component {
                         <span className='text'>Autoscroll</span>
                     </span>
                 </span>
-
             </div>
         );
     }
