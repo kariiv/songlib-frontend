@@ -119,7 +119,7 @@ export default class Sheet extends Component {
     
     copyToClipboard = (e) => {
         this.lyrics.select();
-        document.execCommand(‘copy’);
+        document.execCommand(“copy”);
         e.target.focus();
     }
 
