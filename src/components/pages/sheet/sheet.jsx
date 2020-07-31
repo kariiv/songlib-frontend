@@ -197,6 +197,14 @@ export default class Sheet extends Component {
                     <span className="btn-circle btn-warning shadow-sm mb-2" onClick={this.handleEdit}>
                         <i className="fas fa-edit fa-sm text-white-50"/>
                     </span>
+                    <span>
+                        <span className="btn-circle btn-success shadow-sm mb-2" onClick={this.handleSizeUp}>
+                        <i className="fas fa-plus fa-sm text-white-50"/>
+                        </span>
+                        <span className="btn-circle btn-success shadow-sm mb-2" onClick={this.handleSizeDown}>
+                        <i className="fas fa-minus fa-sm text-white-50"/>
+                    </span>
+                    </span>
                     <span className={"btn btn-icon-split" + (this.state.autoscroll? ' btn-success':' btn-primary')} onClick={this.handleScroll}>
                         <span className='icon text-white-50'>
                             <i className="fas fa-angle-down fa-sm text-white-50"/>
