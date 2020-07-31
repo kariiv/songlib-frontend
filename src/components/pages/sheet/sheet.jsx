@@ -22,7 +22,7 @@ export default class Sheet extends Component {
         autoscroll: null,
         iframe: false,
         showVideo: false,
-        fontSize: 12
+        fontSize: 14
     }
 
     handleKeyDown = (e) => {
