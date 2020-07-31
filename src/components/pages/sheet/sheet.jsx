@@ -119,7 +119,7 @@ export default class Sheet extends Component {
     
     copyToClipboard = (e) => {
         this.lyrics.select();
-        document.execCommand(“copy”);
+        document.execCommand('copy');
         e.target.focus();
     }
 
@@ -178,12 +178,12 @@ export default class Sheet extends Component {
                     />
                     <div className="tags-text mb-0">{s.tags.map(t=> <span key={t} className="badge badge-primary ml-1">#{player.tags[t]}</span>)}</div>
                 </div>
-                <p className="lyrics" ref={(lyrics) => this.lyrics = lyrics} style={ {marginRight: safari ? '-7rem' : “”, fontSize: this.state.fontSize}}>{s.display}</p>
+                <p className="lyrics" ref={(lyrics) => this.lyrics = lyrics} style={ {marginRight: safari ? '-7rem' : '', fontSize: this.state.fontSize}}>{s.display}</p>
 
                 { s.link && <Card className={"shadow border-left-primary video-card"} style={showVideo ?{}:{width:0}}>
                     <Card.Body className='p-0'>
                         <span className="btn-circle btn-danger shadow-sm video-button" 
-                        style={{marginLeft:showVideo? “-1.6rem”:”-2rem”}}
+                        style={{marginLeft:showVideo? '-1.6rem':'-2rem'}}
                     onClick={this.handleVideo}>
                             <i className={"fas fa-sm text-white-50 " + (showVideo? 'fa-angle-right':'fa-angle-left')}/>
                         </span>
