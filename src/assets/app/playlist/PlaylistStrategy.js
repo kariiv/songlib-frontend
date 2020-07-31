@@ -63,6 +63,7 @@ export class ArtistStrategy extends PlaylistStrategy  {
     }
 }
 
+
 export class TagStrategy extends PlaylistStrategy  {
     constructor(player,MIN_PLAYLIST_SIZE) {
         super(player,'Tag','fa-tags', MIN_PLAYLIST_SIZE)
@@ -151,6 +152,26 @@ export class HistoryStrategy extends PlaylistStrategy  {
         return { 'history': {name: this.name, songs: hList.filter((v,i) => hList.indexOf(v) === i) } }
     }
     makePlaylists() {}
+}
+
+
+export class LangStrategy extends PlaylistStrategy  {
+    constructor(player, MIN_PLAYLIST_SIZE) {
+        super(player,'Lang', 'fa-microphone', MIN_PLAYLIST_SIZE)
+    }
+
+    makePlaylists() {
+        if (!this.player.songs) throw new Error('No songs included');
+
+        this.playlists = {}
+        const songlist = Object.values(this.player.songs)
+        for (let song of songlist) {
+            const artist = song.artist.trim();
+            if (this.playlists[artist]) continue;
+            const songs = songlist.filter(s => s.artist.trim() === artist).map(s => s.id)
+            if (songs.length >= this.MIN) this.playlists[artist.toLowerCase()] = { name: artist, songs }
+        }
+    }
 }
 
 
