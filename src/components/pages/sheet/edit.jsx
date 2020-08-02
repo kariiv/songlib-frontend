@@ -88,8 +88,9 @@ export default class Edit extends Component {
                                 value={this.state.artist}
                                 onFocus={this.handleArtistListShow}
                                 onBlur={this.handleArtistListHide}
-                                onChange={(e)=>this.setState({artist:e.target.value})}
+                      onChange={(e)=>this.setState({artist:e.target.value})}
                             />
+                            {artistList && 'List'}
                             <Form.Control
                                 className='edit-form'
                                 type="text"
@@ -98,12 +99,12 @@ export default class Edit extends Component {
                                 onChange={(e)=>this.setState({link:e.target.value})}
                             />
                         </Form.Group>
-                        {artistList && 'List'}
-                        Tags:
+                  
                         <div style={{color:'black'}}>
                             <Select
                                 closeMenuOnSelect={false}
                                 isMulti
+                                placeholder='Tags...'
                                 options={Object.keys(player.tags).map(k =>{ return {value: parseInt(k), label:player.tags[k]}})}
                                 value={this.state.tags.map( k => { return {value: k, label:player.tags[k]}})}
                                 onChange={(v)=> v ? this.setState({tags: v.map(o => o.value)}) : this.setState({tags:[]})}
