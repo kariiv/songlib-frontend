@@ -194,6 +194,9 @@ export default class Sheet extends Component {
 
 
                 <span className='flying-button text-center'>
+                    <span className="btn-circle btn-sm btn-danger shadow-sm mb-2" onClick={this.copyToClipboard}>
+                        <i className="fas fa-clipboard fa-sm text-white-50"/>
+                        </span>
                     <span className="btn-circle btn-warning shadow-sm mb-2" onClick={this.handleEdit}>
                         <i className="fas fa-edit fa-sm text-white-50"/>
                     </span>
