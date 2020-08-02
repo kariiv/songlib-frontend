@@ -8,7 +8,7 @@ import Rating from 'react-rating'
 
 import { safari } from "../../../config";
 
-// import copy from 'copy-to-clipboard';
+import copy from 'copy-to-clipboard';
 
 export default class Sheet extends Component {
     static NEXT = 68;
@@ -120,7 +120,7 @@ export default class Sheet extends Component {
     }
     
     copyToClipboard = (e) => {
-        // copy(this.props.data.s.display)
+        copy(this.props.data.s.display)
     }
 
     handleSongChange(e) {
