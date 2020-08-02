@@ -8,6 +8,8 @@ import Rating from 'react-rating'
 
 import { safari } from "../../../config";
 
+// import copy from 'copy-to-clipboard';
+
 export default class Sheet extends Component {
     static NEXT = 68;
     static PREVIOUS = 65;
@@ -118,9 +120,7 @@ export default class Sheet extends Component {
     }
     
     copyToClipboard = (e) => {
-        this.lyrics.select();
-        document.execCommand('copy');
-        e.target.focus();
+        // copy(this.props.data.s.display)
     }
 
     handleSongChange(e) {
