@@ -13,6 +13,7 @@ export default class Edit extends Component {
     constructor(props) {
         super(props);
         this.state = this.getStates()
+        this.state['artistList'] = false;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -48,17 +49,25 @@ export default class Edit extends Component {
         }, cb)
     }
     handleDelete = () => { deleteSong(this.props.data.s.id, () => this.props.player.reloadLibrary()) }
+    
+    handleArtistListShow = () => {
+        this.setStage({artistList: true})
+    }
+    handleArtistListHide = () => {
+        this.setStage({artistList: false})
+    }
 
     render() {
         const {data, player} = this.props;
+        const {artistList} = this.state;
 
         const split = this.state.lyrics.split('\n');
         const rows = split.length;
         const cols = Math.max.apply(null, split.map(l => l.length))
         return (
             <React.Fragment>
-                {data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name} <i
-                    className='fas fa-angle-right'/> {data.s.title}</h5>}
+                {data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name} 
+                <i className='fas fa-angle-right'/> {data.s.title}</h5>}
                 {!data && <h4>New song</h4>}
                 <Row>
                     <Col xs={12} sm={8} md={6} lg={4} className='mb-3'>
@@ -77,6 +86,8 @@ export default class Edit extends Component {
                                 type="text"
                                 placeholder="Artist"
                                 value={this.state.artist}
+                                onFocus={this.handleArtistListShow}
+                                onBlur={this.handleArtistListHide}
                                 onChange={(e)=>this.setState({artist:e.target.value})}
                             />
                             <Form.Control
@@ -87,6 +98,7 @@ export default class Edit extends Component {
                                 onChange={(e)=>this.setState({link:e.target.value})}
                             />
                         </Form.Group>
+                        {artistList && 'List'}
                         Tags:
                         <div style={{color:'black'}}>
                             <Select
