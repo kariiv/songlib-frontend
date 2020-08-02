@@ -13,6 +13,7 @@ import Sidebar, {
 } from './frame/sidebar';
 
 import Toolbar from './frame/toolbar';
+import Footer from './frame/footer';
 
 import SheetController from './pages/sheet/sheetController'
 import Home from './pages/home'
@@ -78,14 +79,7 @@ class App extends Component {
                         </Container>
                     </div>
 
-
-                    <footer className="sticky-footer bg-white">
-                        <Container className="my-auto">
-                            <div className="copyright text-center my-auto">
-                                <span>Copyright &copy; Mr.Toruabi 2020</span>
-                            </div>
-                        </Container>
-                    </footer>
+                    <Footer/>
                 </div>
 
             </React.Fragment>
