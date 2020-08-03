@@ -24,7 +24,8 @@ export default class Sheet extends Component {
         autoscroll: null,
         iframe: false,
         showVideo: false,
-        fontSize: 14
+        fontSize: 14,
+        copied: false
     }
 
     handleKeyDown = (e) => {
@@ -56,6 +57,7 @@ export default class Sheet extends Component {
     componentWillUnmount() {
         if (this.state.autoscroll !== null) this.handleScroll()
         clearTimeout(this.historyTimeout);
+        clearTimeout(this.copyTime);
         document.removeEventListener("keydown", this.handleKeyDown);
     }
 
@@ -120,7 +122,9 @@ export default class Sheet extends Component {
     }
     
     copyToClipboard = (e) => {
-        copy(this.props.data.s.display)
+        copy(this.props.data.s.display);
+        this.setState({copied:true})
+        this.copyTime = setTimeout(()=>this.setState({copied:false}),2500)
     }
 
     handleSongChange(e) {
@@ -195,7 +199,8 @@ export default class Sheet extends Component {
 
                 <span className='flying-button text-center'>
                     <span className="btn-circle btn-sm btn-danger shadow-sm mb-2" onClick={this.copyToClipboard}>
-                        <i className="fas fa-clipboard fa-sm text-white-50"/>
+                        {!this.state.copied && <i className="fas fa-clipboard fa-sm text-white-50"/>}
+                        {this.state.copied && <i className="fas fa-check fa-sm text-white-50"/>}
                         </span>
                     <span className="btn-circle btn-warning shadow-sm mb-2" onClick={this.handleEdit}>
                         <i className="fas fa-edit fa-sm text-white-50"/>
