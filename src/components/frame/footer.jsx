@@ -1,3 +1,4 @@
+import React from "react";
 import { ver } from '../../config';
 import {Container} from 'react-bootstrap';
 
