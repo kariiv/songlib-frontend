@@ -122,7 +122,9 @@ export default class Sheet extends Component {
     }
     
     getLineHeight = () => {
-        return ((3/70 * this.state.fontSize + 35)/100).toString() + 'rem'
+        const slope = 0.07;
+        const add = 0.04;
+        return (slope * this.state.fontSize + add).toString() + 'rem'
     }
     
     copyToClipboard = (e) => {
