@@ -8,4 +8,4 @@ export const baseName = '/~kariiv/music2'
 
 export const safari = navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1
 
-export const ver = "2.1.1"
+export const ver = "2.1.2"
