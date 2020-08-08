@@ -144,13 +144,11 @@ p {
 
 .lyrics {
   font-family: "Cousine", monospace;
-  font-size: 14px;
   font-style: normal;
   color: black;
   white-space: pre-wrap;
   width: max-content;
   letter-spacing: -0.03rem;
-  line-height: 0.95rem;
   padding: 0;
   resize: none;
 }

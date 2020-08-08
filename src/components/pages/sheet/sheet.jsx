@@ -121,6 +121,10 @@ export default class Sheet extends Component {
         this.setState({fontSize: fontSize - 1});
     }
     
+    getLineHeight = () => {
+        return ((3/70 * this.state.fontSize + 35)/100).toString() + 'rem'
+    }
+    
     copyToClipboard = (e) => {
         copy(this.props.data.s.display);
         this.setState({copied:true})
@@ -182,7 +186,12 @@ export default class Sheet extends Component {
                     />
                     <div className="tags-text mb-0">{s.tags.map(t=> <span key={t} className="badge badge-primary ml-1">#{player.tags[t]}</span>)}</div>
                 </div>
-                <p className="lyrics" ref={(lyrics) => this.lyrics = lyrics} style={ {marginRight: safari ? '-7rem' : '', fontSize: this.state.fontSize}}>{s.display}</p>
+                <p className="lyrics" 
+                    ref={(lyrics) => this.lyrics = lyrics} 
+                    style={ {marginRight: safari ? '-7rem' : '', 
+                             fontSize: this.state.fontSize,
+                             lineHeight: this.getLineHeight() }}
+                >{s.display}</p>
 
                 { s.link && <Card className={"shadow border-left-primary video-card"} style={showVideo ?{}:{width:0}}>
                     <Card.Body className='p-0'>
