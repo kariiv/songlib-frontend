@@ -124,7 +124,7 @@ export default class Sheet extends Component {
     getLineHeight = () => {
         const slope = 0.07;
         const add = 0.04;
-        return (slope * this.state.fontSize + add).toString() + 'rem'
+        return (slope * this.state.fontSize + add).toString() + 'rem';
     }
     
     copyToClipboard = (e) => {
@@ -146,7 +146,7 @@ export default class Sheet extends Component {
     }
     handleTransposeUp = () => {
         const {data, player} = this.props;
-        player.transposeUp(data.s)
+        player.transposeUp(data.s);
     }
 
     scroll = () => window.scrollBy(0, 1)
