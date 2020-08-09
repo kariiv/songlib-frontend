@@ -198,7 +198,7 @@ export default class Sheet extends Component {
                 { s.link && <Card className={"shadow border-left-primary video-card"} style={showVideo ?{}:{width:0}}>
                     <Card.Body className='p-0'>
                         <span className="btn-circle btn-danger shadow-sm video-button" 
-                        style={{marginLeft:showVideo? '-1.5rem':'-2.2rem', borderRadius:showVideo? '50% 0 0 50%':'50%'}}
+                        style={{marginLeft:showVideo? '-1.5rem':'-2.2rem', borderRadius:showVideo? '50%':'50% 0 0 50%'}}
                     onClick={this.handleVideo}>
                             <i className={"fas fa-sm text-white-50 " + (showVideo? 'fa-angle-right':'fa-angle-left')}/>
                         </span>
