@@ -222,11 +222,15 @@ export default class Sheet extends Component {
                         <i className="fas fa-edit fa-sm text-white-50"/>
                     </span>
                     <span>
-                        <span className="btn-circle btn-success shadow-sm mb-2" onClick={this.handleSizeUp}>
+                        <span className="btn-circle btn-success shadow-sm mb-2" 
+                            style={{borderRadius:'50% 0 0 50%'}}
+                            onClick={this.handleSizeUp}>
                         <i className="fas fa-plus fa-sm text-white-50"/>
                         </span>
-                        <span className='bg-success'>{fontSize}</span>
-                        <span className="btn-circle btn-success shadow-sm mb-2" onClick={this.handleSizeDown}>
+                        <span className='bg-success' style={{height:'100%'}} onClick={this.handleSizeReset}>{fontSize}</span>
+                        <span className="btn-circle btn-success shadow-sm mb-2" 
+                            style={{borderRadius:'0 50% 50% 0'}}
+                            onClick={this.handleSizeDown}>
                         <i className="fas fa-minus fa-sm text-white-50"/>
                     </span>
                     </span>
