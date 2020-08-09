@@ -57,7 +57,7 @@ $myhome = 'cd /home/kariiv/songlib-frontend/ && ';
 
 $commands = array(
 	'whoami',
-	$myhome . 'git pull https://kariiv:thgLOJ1234@github.com/kariiv/songlib-frontend.git',
+	$myhome . 'git pull https://kariiv:thgLOJ1234@github.com/kariiv/songlib-frontend.git --force',
 	$myhome . 'git status',
 	$myhome . 'npm run build',
 	$myhome . 'rm -r ../public_html/music2/*',
