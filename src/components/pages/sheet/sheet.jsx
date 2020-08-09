@@ -123,7 +123,7 @@ export default class Sheet extends Component {
     
     getLineHeight = () => {
         const slope = 0.07;
-        const add = 0.04;
+        const add = 0;
         return (slope * this.state.fontSize + add).toString() + 'rem';
     }
     
