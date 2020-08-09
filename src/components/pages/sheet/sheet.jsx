@@ -17,8 +17,8 @@ export default class Sheet extends Component {
     static SCROLL = 32;
     static TRANS_UP = 87;
     static TRANS_DOWN = 83;
-    static MAX_FONT = 24;
-    static MIN_FONT = 5;
+    static MAX_FONT = 28;
+    static MIN_FONT = 4;
 
     state = {
         autoscroll: null,
