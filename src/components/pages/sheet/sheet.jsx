@@ -19,12 +19,13 @@ export default class Sheet extends Component {
     static TRANS_DOWN = 83;
     static MAX_FONT = 28;
     static MIN_FONT = 4;
+    static NORMAL_FONT = 14;
 
     state = {
         autoscroll: null,
         iframe: false,
         showVideo: false,
-        fontSize: 14,
+        fontSize: Sheet.NORMAL_FONT,
         copied: false
     }
 
@@ -114,11 +115,15 @@ export default class Sheet extends Component {
         if (fontSize < Sheet.MAX_FONT)
         this.setState({fontSize: fontSize + 1});
     }
-    
     handleSizeDown = () => {
         const { fontSize } = this.state;
         if (fontSize > Sheet.MIN_FONT)
         this.setState({fontSize: fontSize - 1});
+    }
+    handleSizeReset = () => {
+        const { fontSize } = this.state;
+        if (fontSize !== Sheet.NORMAL_FONT)
+        this.setState({fontSize: Sheet.NORMAL_FONT});
     }
     
     getLineHeight = () => {
@@ -129,16 +134,16 @@ export default class Sheet extends Component {
     
     copyToClipboard = (e) => {
         copy(this.props.data.s.display);
-        this.setState({copied:true})
+        this.setState({copied:true});
         this.copyTime = setTimeout(()=>this.setState({copied:false}),2500)
     }
 
     handleSongChange(e) {
-        e.preventDefault()
-        setTimeout(this.scrollTop)
+        e.preventDefault();
+        setTimeout(this.scrollTop);
         window.getSelection().removeAllRanges();
         if (this.state.autoscroll) this.handleScroll()
-        this.setState({showVideo:false})
+        this.setState({showVideo:false, iframe:false})
     }
     handleTransposeDown = () => {
         const {data, player} = this.props;
@@ -154,11 +159,11 @@ export default class Sheet extends Component {
 
     render() {
         const {data, player} = this.props;
-        const {showVideo} = this.state;
+        const {showVideo, fontSize} = this.state;
         const {c, p, s} = data;
 
         return (
-            <div onKeyDown={()=>console.log('Test')}>
+            <div>
                 <h4>{capitalize(c.name)} <i className='fas fa-angle-right' /> {p.name}</h4>
                 <Row className='mb-2'>
                     <Col className='text-left align-self-start pl-1 pr-0'>
@@ -220,6 +225,7 @@ export default class Sheet extends Component {
                         <span className="btn-circle btn-success shadow-sm mb-2" onClick={this.handleSizeUp}>
                         <i className="fas fa-plus fa-sm text-white-50"/>
                         </span>
+                        <span className='bg-success'>{fontSize}</span>
                         <span className="btn-circle btn-success shadow-sm mb-2" onClick={this.handleSizeDown}>
                         <i className="fas fa-minus fa-sm text-white-50"/>
                     </span>
