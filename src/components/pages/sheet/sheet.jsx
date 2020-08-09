@@ -227,7 +227,7 @@ export default class Sheet extends Component {
                             onClick={this.handleSizeUp}>
                         <i className="fas fa-plus fa-sm text-white-50"/>
                         </span>
-                        <span className='bg-success text-white-50 p-1' onClick={this.handleSizeReset}>{fontSize}</span>
+                        <span className='bg-success text-white-50 p-2' onClick={this.handleSizeReset}>{fontSize}</span>
                         <span className="btn-circle btn-success shadow-sm mb-2" 
                             style={{borderRadius:'0 50% 50% 0'}}
                             onClick={this.handleSizeDown}>
