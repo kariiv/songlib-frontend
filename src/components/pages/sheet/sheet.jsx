@@ -21,7 +21,6 @@ export default class Sheet extends Component {
     static NORMAL_FONT = 14;
 
     state = {
-        autoscroll: null,
         fontSize: Sheet.NORMAL_FONT
     }
 
@@ -52,7 +51,6 @@ export default class Sheet extends Component {
     }
 
     componentWillUnmount() {
-        if (this.state.autoscroll !== null) this.handleScroll()
         clearTimeout(this.historyTimeout);
         document.removeEventListener("keydown", this.handleKeyDown);
     }
@@ -67,29 +65,19 @@ export default class Sheet extends Component {
     }
 
     makeHistoryTimeout() {
-        clearTimeout(this.historyTimeout)
-        this.historyTimeout = setTimeout(this.handleHistory, 60000)
-        // this.historyTimeout = setTimeout(this.handleHistory, 2000)
+        clearTimeout(this.historyTimeout);
+        this.historyTimeout = setTimeout(this.handleHistory, 60000);
     }
 
     handleHistory = () => {
         this.props.player.toHistory(this.props.data.s.id)
     }
-    
-    handleScroll = () => {
-        if (this.state.autoscroll === null)
-            this.setState({ autoscroll: setInterval(this.scroll, 170) })
-        else {
-            clearInterval(this.state.autoscroll);
-            this.setState({ autoscroll: null })
-        }
-    }
 
     handleEdit = (e) => {
-        const {player, controller} = this.props;
+        const {player, controller, data} = this.props;
         setTimeout(controller.scrollTop);
         if (controller.state.autoscroll) controller.handleScroll()
-        player.editSong(this.props.data)
+        player.editSong(data)
     }
 
     
@@ -110,7 +98,7 @@ export default class Sheet extends Component {
     }
     
     getLineHeight = () => {
-        const slope = 0.07;
+        const slope = 0.06;
         const add = 0;
         return (slope * this.state.fontSize + add).toString() + 'rem';
     }
@@ -123,14 +111,12 @@ export default class Sheet extends Component {
         const {data, player} = this.props;
         player.transposeUp(data.s);
     }
-
-    scroll = () => window.scrollBy(0, 1)
-    scrollTop = () => window.scrollTo(0, 0)
+    
 
     render() {
         const {data, player, controller} = this.props;
         const {handlePrev, handleNext, handleRand} = controller;
-        const {fontSize, autoscroll} = this.state;
+        const {fontSize} = this.state;
         const {c, p, s} = data;
         
         const navText = {
@@ -167,8 +153,7 @@ export default class Sheet extends Component {
                              lineHeight: this.getLineHeight() }}
                 >{s.display}</p>
 
-                <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={this.handleScroll} copyText={s.display} autoscroll={autoscroll} fontSize={fontSize}/>
-                
+                <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={controller.handleScroll} copyText={s.display} autoscroll={controller.state.autoscroll} fontSize={fontSize}/>
             </Fragment>
         );
     }

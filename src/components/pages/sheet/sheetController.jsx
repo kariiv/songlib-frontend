@@ -14,7 +14,12 @@ export default class SheetController extends Component {
 
     state = {
         videoLoaded: false,
-        videoShow: false
+        videoShow: false,
+        autoscroll: null,
+    }
+    
+    componentWillUnmount() {
+        if (this.state.autoscroll !== null) this.handleScroll()
     }
 
     handleVideoOpen = () => {
@@ -47,6 +52,18 @@ export default class SheetController extends Component {
         if (this.state.autoscroll) this.handleScroll()
         this.setState({videoShow:false, videoLoaded:false})
     }
+    
+    handleScroll = () => {
+        if (this.state.autoscroll === null)
+            this.setState({ autoscroll: setInterval(this.scroll, 170) })
+        else {
+            clearInterval(this.state.autoscroll);
+            this.setState({ autoscroll: null })
+        }
+    }
+    
+    scroll = () => window.scrollBy(0, 1)
+    scrollTop = () => window.scrollTo(0, 0)
 
     render() {
         const {data, player, edit} = this.props;
