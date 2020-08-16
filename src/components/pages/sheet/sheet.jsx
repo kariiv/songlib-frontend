@@ -86,7 +86,7 @@ export default class Sheet extends Component {
     }
 
     handleEdit = (e) => {
-        this.handleSongChange(e)
+        this.props.controller.handleSongChange(e)
         this.props.player.editSong(this.props.data)
     }
 
