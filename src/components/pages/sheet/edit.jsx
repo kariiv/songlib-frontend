@@ -70,11 +70,11 @@ export default class Edit extends Component {
 
     render() {
         const {data, player, controller} = this.props;
-        const {artistList} = this.state;
+        const {artistList, rank, lyrics, title, artist, link, tags} = this.state;
         
         const {handlePrev, handleNext, handleRand} = data ? controller:{};
 
-        const split = this.state.lyrics.split('\n');
+        const split = lyrics.split('\n');
         const rows = split.length;
         const cols = Math.max.apply(null, split.map(l => l.length))
         
@@ -102,7 +102,7 @@ export default class Edit extends Component {
                                 size="lg"
                                 type="text"
                                 placeholder="Title"
-                                value={this.state.title}
+                                value={this.title}
                                 onChange={(e)=>this.setState({title:e.target.value})}
                             />
 
@@ -110,7 +110,7 @@ export default class Edit extends Component {
                                 className='edit-form'
                                 type="text"
                                 placeholder="Artist"
-                                value={this.state.artist}
+                                value={this.artist}
                                 onFocus={this.handleArtistListShow}
                                 onBlur={this.handleArtistListHide}
                       onChange={(e)=>this.setState({artist:e.target.value})}
@@ -120,7 +120,7 @@ export default class Edit extends Component {
                                 className='edit-form'
                                 type="text"
                                 placeholder="Link"
-                                value={this.state.link}
+                                value={this.link}
                                 onChange={(e)=>this.setState({link:e.target.value})}
                             />
                         </Form.Group>
@@ -131,28 +131,21 @@ export default class Edit extends Component {
                                 isMulti
                                 placeholder='Tags...'
                                 options={Object.keys(player.tags).map(k =>{ return {value: parseInt(k), label:player.tags[k]}})}
-                                value={this.state.tags.map( k => { return {value: k, label:player.tags[k]}})}
+                                value={tags.map( k => { return {value: k, label:player.tags[k]}})}
                                 onChange={(v)=> v ? this.setState({tags: v.map(o => o.value)}) : this.setState({tags:[]})}
                             />
                         </div>
                         
                         <Rating
                             start={-1} stop={4}
-                            initialRating={this.state.rank}
+                            initialRating={rank}
                             onChange={(v) => this.setState({rank:v}) }
                             emptySymbol="fas fa-fw fa-star text-gray-300"
                             fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
-                        /> { rankRange[this.state.rank] }
+                        /> { rankRange[rank] }
                         
-                        <span className="btn-circle btn-sm btn-info shadow-sm ml-3" onClick={this.handleTransposeDown}>
-                            <i className="fas fa-angle-down fa-sm text-white-50"/>
-                        </span>
+                        //todo: toolbar
                         
-                        <strong className='text-black mr-1 ml-1'>{s.transpose}</strong>
-                        
-                        <span className="btn-circle btn-sm btn-info shadow-sm" onClick={this.handleTransposeUp}>
-                            <i className="fas fa-angle-up fa-sm text-white-50"/>
-                        </span>
                     </Col>
                 </Row>
                 
