@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 
 export default ({link, show, load, onClick, onLoad}) => {
     return (
