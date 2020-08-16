@@ -15,9 +15,9 @@ import Sidebar, {
 import Toolbar from './frame/toolbar';
 import Footer from './frame/footer';
 
-import SheetController from './pages/sheet/sheetController'
-import Home from './pages/home'
-import Tag from './pages/tag'
+import SongController from './pages/sheet/songController';
+import Home from './pages/home';
+import Tag from './pages/tag';
 
 import {Container} from 'react-bootstrap'
 import '../assets/scss/frame/sb-admin-2.scss';
@@ -71,7 +71,7 @@ class App extends Component {
                         <Container fluid>
                             <Switch>
                                 <Route exact path='/' render={(props) => <Home player={this.state.player} {...props}/>}/>
-                                <Route exact path='/play/' render={(props) => <SheetController player={this.state.player} {...props}/>}/>
+                                <Route exact path='/play/' render={(props) => <SongController player={this.state.player} {...props}/>}/>
                                 <Route exact path='/tag/' render={(props) => <Tag player={this.state.player} {...props}/>}/>
                                 <Route exact path='/settings/' render={() => null}/>
                                 <Route exact path='/theme/' render={() => null}/>
