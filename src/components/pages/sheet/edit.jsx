@@ -53,10 +53,13 @@ export default class Edit extends Component {
     }
     
     handleExitEdit = () => {
+        const {data, player} = this.props;
         data ? player.setSong(data.s) : history.push('/');
     }
     
-    handleDelete = () => { deleteSong(this.props.data.s.id, () => this.props.player.reloadLibrary()) }
+    handleDelete = () => { 
+        deleteSong(this.props.data.s.id, this.props.player.reloadLibrary);
+    }
     
     handleArtistListShow = () => {
         this.setStage({artistList: true})
@@ -66,8 +69,10 @@ export default class Edit extends Component {
     }
 
     render() {
-        const {data, player} = this.props;
+        const {data, player, controller} = this.props;
         const {artistList} = this.state;
+        
+        const {handlePrev, handleNext, handleRand} = data ? controller:{};
 
         const split = this.state.lyrics.split('\n');
         const rows = split.length;
