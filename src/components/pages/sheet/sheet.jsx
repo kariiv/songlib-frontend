@@ -86,8 +86,10 @@ export default class Sheet extends Component {
     }
 
     handleEdit = (e) => {
-        this.props.controller.handleSongChange(e)
-        this.props.player.editSong(this.props.data)
+        const {player, controller} = this.props;
+        setTimeout(controller.scrollTop);
+        if (controller.state.autoscroll) controller.handleScroll()
+        player.editSong(this.props.data)
     }
 
     
