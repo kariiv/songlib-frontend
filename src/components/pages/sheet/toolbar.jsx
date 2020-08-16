@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import copy from 'copy-to-clipboard';
 import {Row, Col} from 'react-bootstrap';
+import '../../../assets/scss/sheet-toolbar.scss'
 
 export const EditToolbar = ({onDelete, onLeave, onSave}) => {
     return (
