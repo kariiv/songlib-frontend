@@ -24,10 +24,7 @@ export default class Sheet extends Component {
 
     state = {
         autoscroll: null,
-        iframe: false,
-        showVideo: false,
-        fontSize: Sheet.NORMAL_FONT,
-        copied: false
+        fontSize: Sheet.NORMAL_FONT
     }
 
     handleKeyDown = (e) => {
@@ -59,7 +56,6 @@ export default class Sheet extends Component {
     componentWillUnmount() {
         if (this.state.autoscroll !== null) this.handleScroll()
         clearTimeout(this.historyTimeout);
-        clearTimeout(this.copyTime);
         document.removeEventListener("keydown", this.handleKeyDown);
     }
 
@@ -82,10 +78,6 @@ export default class Sheet extends Component {
         this.props.player.toHistory(this.props.data.s.id)
     }
     
-    handleVideo = () => {
-        this.setState({showVideo: !this.state.showVideo})
-    }
-
     handleScroll = () => {
         if (this.state.autoscroll === null)
             this.setState({ autoscroll: setInterval(this.scroll, 170) })
@@ -138,7 +130,7 @@ export default class Sheet extends Component {
     render() {
         const {data, player, controller} = this.props;
         const {handlePrev, handleNext, handleRand} = controller;
-        const {showVideo, fontSize} = this.state;
+        const {fontSize, autoscroll} = this.state;
         const {c, p, s} = data;
         
         const navText = {
@@ -162,8 +154,7 @@ export default class Sheet extends Component {
                         start={-1} stop={4}
                         initialRating={s.rank}
                         emptySymbol="fas fa-fw fa-star text-gray-300"
-                        fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
-                        readonly
+                        fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)} readonly
                     />
                     
                     <div className="tags-text mb-0">{s.tags.map(t=> <span key={t} className="badge badge-primary ml-1">#{player.tags[t]}</span>)}</div>
@@ -176,7 +167,7 @@ export default class Sheet extends Component {
                              lineHeight: this.getLineHeight() }}
                 >{s.display}</p>
 
-                <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={this.handleScroll} copyText={s.display}/>
+                <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={this.handleScroll} copyText={s.display} autoscroll={autoscroll} fontSize={fontSize}/>
                 
             </Fragment>
         );

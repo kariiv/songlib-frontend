@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import copy from 'copy-to-clipboard';
+import {Row, Col} from 'react-bootstrap';
 
 export const EditToolbar = ({onDelete, onLeave, onSave}) => {
     return (
@@ -21,7 +22,7 @@ export const EditToolbar = ({onDelete, onLeave, onSave}) => {
 }
 
 
-export const SheetToolbar = ({onEdit, onFontIn, onFontOut, onFontReset, onScroll, copyText}) => {
+export const SheetToolbar = ({onEdit, onFontIn, onFontOut, onFontReset, onScroll, copyText, fontSize, autoscroll}) => {
     return (
         <span className='flying-button text-center'>
             <CopyButton text={copyText}/>
