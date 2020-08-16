@@ -102,7 +102,7 @@ export default class Edit extends Component {
                                 size="lg"
                                 type="text"
                                 placeholder="Title"
-                                value={this.title}
+                                value={title}
                                 onChange={(e)=>this.setState({title:e.target.value})}
                             />
 
@@ -110,7 +110,7 @@ export default class Edit extends Component {
                                 className='edit-form'
                                 type="text"
                                 placeholder="Artist"
-                                value={this.artist}
+                                value={artist}
                                 onFocus={this.handleArtistListShow}
                                 onBlur={this.handleArtistListHide}
                       onChange={(e)=>this.setState({artist:e.target.value})}
@@ -120,7 +120,7 @@ export default class Edit extends Component {
                                 className='edit-form'
                                 type="text"
                                 placeholder="Link"
-                                value={this.link}
+                                value={link}
                                 onChange={(e)=>this.setState({link:e.target.value})}
                             />
                         </Form.Group>
@@ -151,7 +151,7 @@ export default class Edit extends Component {
                     className='lyrics edit-textarea'
                     cols={cols - 1}
                     rows={rows}
-                    value={this.state.lyrics}
+                    value={lyrics}
                     onChange={(e) => this.setState({lyrics: e.target.value})}
                 />
                 
