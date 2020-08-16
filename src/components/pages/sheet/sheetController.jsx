@@ -14,7 +14,7 @@ import Sheet from './sheet';
 import Edit from './edit';
 
 
-export default class Sheet extends Component {
+export default class SheetController extends Component {
     
     static TRANS_UP = 87;
     static TRANS_DOWN = 83;
