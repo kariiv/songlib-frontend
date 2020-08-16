@@ -78,7 +78,7 @@ export default class Edit extends Component {
         const rows = split.length;
         const cols = Math.max.apply(null, split.map(l => l.length))
         
-        const {c, p, s} = data? data : {};
+        const {p, s} = data? data : {};
         
         const navText = data ? {
             now: s.index,

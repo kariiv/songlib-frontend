@@ -1,8 +1,6 @@
 import React, { Component, Fragment} from "react";
 import '../../../assets/scss/css.css';
 
-import {Row, Col, Card} from 'react-bootstrap'
-
 import {capitalize} from '../../../config'
 import Rating from 'react-rating'
 

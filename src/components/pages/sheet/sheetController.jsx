@@ -1,11 +1,6 @@
 import React, { Component, Fragment } from "react";
 import '../../../assets/scss/css.css';
 
-import {capitalize} from '../../../config'
-import Rating from 'react-rating'
-
-import { safari } from "../../../config";
-
 import VideoCard from './videoCard';
 
 import Sheet from './sheet';
@@ -56,7 +51,7 @@ export default class SheetController extends Component {
     render() {
         const {data, player, edit} = this.props;
         const {videoShow, videoLoaded} = this.state;
-        const {c, p, s} = data;
+        const {s} = data;
 
         return (
             <Fragment>
