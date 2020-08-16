@@ -31,19 +31,27 @@ import history from "../history";
 class App extends Component {
 
     state = {
-        player: new Player(this)
+        player: new Player(this),
+        hasError: false,
+        info: '',
+        error: ''
+    }
+    
+    componentDidCatch(error, info) {
+      this.setState({ hasError: true, error, info });
     }
 
     render() {
+      const {hasError,error,info, player} = this.state;
         return (
             <React.Fragment>
                 <Sidebar toggled={true}>
                     <SidebarHead brand={<>Songs <sup>2.0</sup></>} icon='fa-music'/>
                     <Devider/>
-                    <PlaylistsBuilder player={this.state.player}/>
+                    <PlaylistsBuilder player={player}/>
                     <Devider/>
                     <NavHeader label='Utilities'/>
-                    <SortBuilder player={this.state.player}/>
+                    <SortBuilder player={player}/>
                     <NavItem
                         icon='fa-paper-plane'
                         label='Add new song'
@@ -58,7 +66,7 @@ class App extends Component {
                     <Devider className='mb-0'/>
 
                     <NavItem icon='fa-cog' label='Settings' to='/settings'/>
-                    <NavItem icon='fa-redo' label='Refresh' onClick={this.state.player.init} />
+                    <NavItem icon='fa-redo' label='Refresh' onClick={player.init} />
                     <NavItem icon='fa-info' label='Info' onClick={()=>console.log('Sry!')} />
 
                     <Devider/>
@@ -67,15 +75,17 @@ class App extends Component {
 
                 <div id="content-wrapper" className="d-flex flex-column" onClick={Sidebar.hideDrops}>
                     <div id="content" >
-                        <Toolbar sideToggle={Sidebar.toggle} player={this.state.player}/>
+                        <Toolbar sideToggle={Sidebar.toggle} player={player}/>
                         <Container fluid>
-                            <Switch>
+                          {hasError && <div>Error: {error}</div>}
+                          {hasError && <div>Info: {info}</div>}
+                            {!hasError && <Switch>
                                 <Route exact path='/' render={(props) => <Home player={this.state.player} {...props}/>}/>
-                                <Route exact path='/play/' render={(props) => <SongController player={this.state.player} {...props}/>}/>
-                                <Route exact path='/tag/' render={(props) => <Tag player={this.state.player} {...props}/>}/>
+                                <Route exact path='/play/' render={(props) => <SongController player={player} {...props}/>}/>
+                                <Route exact path='/tag/' render={(props) => <Tag player={player} {...props}/>}/>
                                 <Route exact path='/settings/' render={() => null}/>
                                 <Route exact path='/theme/' render={() => null}/>
-                            </Switch>
+                            </Switch>}
                         </Container>
                     </div>
 
