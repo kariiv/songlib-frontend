@@ -143,9 +143,6 @@ export default class Edit extends Component {
                             emptySymbol="fas fa-fw fa-star text-gray-300"
                             fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
                         /> { rankRange[rank] }
-                        
-                        //todo: toolbar
-                        
                     </Col>
                 </Row>
                 

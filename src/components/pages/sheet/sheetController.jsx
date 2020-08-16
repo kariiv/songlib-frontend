@@ -45,7 +45,7 @@ export default class SheetController extends Component {
         setTimeout(this.scrollTop);
         window.getSelection().removeAllRanges();
         if (this.state.autoscroll) this.handleScroll()
-        this.setState({showVideo:false, iframe:false})
+        this.setState({videoShow:false, videoLoaded:false})
     }
 
     render() {
