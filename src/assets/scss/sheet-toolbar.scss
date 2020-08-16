@@ -1,0 +1,9 @@
+.flying-button {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  > span {
+    margin-left: auto;
+  }
+}

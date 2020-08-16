@@ -1,41 +1,74 @@
-import React from "react";
+import React, { Component, Fragment } from "react";
 import '../../../assets/scss/css.css';
-import queryString from 'query-string';
-import { Redirect } from 'react-router-dom';
 
-import NotFound from '../404';
+import {Row, Col, Card} from 'react-bootstrap'
+
+import {capitalize} from '../../../config'
+import Rating from 'react-rating'
+
+import { safari } from "../../../config";
+
+import VideoCard from './videoCard';
+
 import Sheet from './sheet';
 import Edit from './edit';
 
-export default ({player, history}) => {
-    if (!player.loaded) return null;
-    const {c, p, s, sort, edit} = queryString.parse(history.location.search);
 
-    const qSong = player.getQueryResult();
+export default class Sheet extends Component {
+    
+    static TRANS_UP = 87;
+    static TRANS_DOWN = 83;
 
-    if (edit) {
-        if (!qSong && (c || p || s)) { // Push new URL
-            return (<Redirect to={{
-                pathname: "/play/",
-                search: "?edit=true"
-            }}/>)
-        }
-        if (s && qSong) {
-            if (!qSong.s.lyrics) return <h3>Waiting lyrics</h3>
-            return <Edit data={qSong} player={player}/>
-        }
-        else return <Edit player={player}/>
+    state = {
+        videoLoaded: false,
+        videoShow: false
     }
 
-    if (!qSong) return <NotFound/>
-
-    if (!c || !p || !s) { // Push new URL
-        if (sort) qSong.sort = sort
-        return (<Redirect to={{
-                pathname: "/play/",
-                search: player.getQueryUrl(qSong)
-            }}/>)
+    handleVideoOpen = () => {
+        this.setState({videoShow: !this.state.videoShow})
+    }
+    
+    handleVideoLoad = () => {
+        this.setState({videoLoaded: true})
+    }
+    
+    
+    handleNext = (e) => {
+        this.handleSongChange(e)
+        this.props.player.next()
+    }
+    handlePrev = (e) => {
+        this.handleSongChange(e)
+        this.props.player.prev()
+    }
+    handleRand = (e) => {
+        this.handleSongChange(e)
+        this.props.player.rand()
+    }
+    
+    
+    handleSongChange(e) {
+        e.preventDefault();
+        setTimeout(this.scrollTop);
+        window.getSelection().removeAllRanges();
+        if (this.state.autoscroll) this.handleScroll()
+        this.setState({showVideo:false, iframe:false})
     }
 
-    return <Sheet data={qSong} player={player}/>;
+    render() {
+        const {data, player, edit} = this.props;
+        const {videoShow, videoLoaded} = this.state;
+        const {c, p, s} = data;
+
+        return (
+            <Fragment>
+               
+                {!edit && <Sheet controller={this} {...this.props} />}
+                {edit && <Edit controller={this} {...this.props} />}
+
+                { s.link && <VideoCard show={videoShow} link={player.getYoutubeEmbed(s.link)} load={videoLoaded} onClick={this.handleVideoOpen} onLoad={this.handleVideoLoad}/>}
+                
+            </Fragment>
+        );
+    }
 }

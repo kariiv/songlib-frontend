@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment} from "react";
 import '../../../assets/scss/css.css';
 
 import {Row, Col, Card} from 'react-bootstrap'
@@ -8,7 +8,8 @@ import Rating from 'react-rating'
 
 import { safari } from "../../../config";
 
-import copy from 'copy-to-clipboard';
+import {SheetToolbar, NavToolbar} from "./toolbar";
+
 
 export default class Sheet extends Component {
     static NEXT = 68;
@@ -64,8 +65,8 @@ export default class Sheet extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.data.s !== this.props.data.s) this.makeHistoryTimeout();
-
     }
+    
     componentDidMount() {
         this.makeHistoryTimeout();
         document.addEventListener("keydown", this.handleKeyDown);
@@ -80,6 +81,7 @@ export default class Sheet extends Component {
     handleHistory = () => {
         this.props.player.toHistory(this.props.data.s.id)
     }
+    
     handleVideo = () => {
         this.setState({showVideo: !this.state.showVideo})
     }
@@ -93,22 +95,11 @@ export default class Sheet extends Component {
         }
     }
 
-    handleNext = (e) => {
-        this.handleSongChange(e)
-        this.props.player.next()
-    }
-    handlePrev = (e) => {
-        this.handleSongChange(e)
-        this.props.player.prev()
-    }
-    handleRand = (e) => {
-        this.handleSongChange(e)
-        this.props.player.rand()
-    }
     handleEdit = (e) => {
         this.handleSongChange(e)
         this.props.player.editSong(this.props.data)
     }
+
     
     handleSizeUp = () => {
         const { fontSize } = this.state;
@@ -131,20 +122,7 @@ export default class Sheet extends Component {
         const add = 0;
         return (slope * this.state.fontSize + add).toString() + 'rem';
     }
-    
-    copyToClipboard = (e) => {
-        copy(this.props.data.s.display);
-        this.setState({copied:true});
-        this.copyTime = setTimeout(()=>this.setState({copied:false}),2500)
-    }
 
-    handleSongChange(e) {
-        e.preventDefault();
-        setTimeout(this.scrollTop);
-        window.getSelection().removeAllRanges();
-        if (this.state.autoscroll) this.handleScroll()
-        this.setState({showVideo:false, iframe:false})
-    }
     handleTransposeDown = () => {
         const {data, player} = this.props;
         player.transposeDown(data.s)
@@ -158,32 +136,28 @@ export default class Sheet extends Component {
     scrollTop = () => window.scrollTo(0, 0)
 
     render() {
-        const {data, player} = this.props;
+        const {data, player, controller} = this.props;
+        const {handlePrev, handleNext, handleRand} = controller;
         const {showVideo, fontSize} = this.state;
         const {c, p, s} = data;
+        
+        const navText = {
+            now: s.index,
+            total: p.songs.length,
+            level: s.transpose
+        }
 
         return (
-            <div>
-                <h4>{capitalize(c.name)} <i className='fas fa-angle-right' /> {p.name}</h4>
-                <Row className='mb-2'>
-                    <Col className='text-left align-self-start pl-1 pr-0'>
-                        <span className="btn-circle btn-primary shadow-sm" onClick={this.handlePrev}>
-                        <i className="fas fa-angle-left fa-sm text-white-50"/></span>
-                            <strong className='text-black mr-1 ml-1' onClick={this.handleRand}>{s.index}/{p.songs.length}</strong>
-                            <span className="btn-circle btn-primary shadow-sm" onClick={this.handleNext}>
-                        <i className="fas fa-angle-right fa-sm text-white-50"/></span>
-
-                            <span className="btn-circle btn-sm btn-info shadow-sm ml-3" onClick={this.handleTransposeDown}>
-                        <i className="fas fa-angle-down fa-sm text-white-50"/></span>
-                            <strong className='text-black mr-1 ml-1'>{s.transpose}</strong>
-                            <span className="btn-circle btn-sm btn-info shadow-sm" onClick={this.handleTransposeUp}>
-                        <i className="fas fa-angle-up fa-sm text-white-50"/></span>
-                    </Col>
-                </Row>
+            <Fragment>
+                <h5>{capitalize(c.name)} <i className='fas fa-angle-right' /> {p.name}</h5>
+                
+                <NavToolbar prev={handlePrev} rand={handleRand} next={handleNext} up={this.handleTransposeUp} down={this.handleTransposeDown} text={navText} />
 
                 <div className="titles mb-3">
                     <h3 className="title">{s.title}</h3>
+                    
                     <h6 className="artist mb-0"> {s.artist}</h6>
+                    
                     <Rating
                         start={-1} stop={4}
                         initialRating={s.rank}
@@ -191,8 +165,10 @@ export default class Sheet extends Component {
                         fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
                         readonly
                     />
+                    
                     <div className="tags-text mb-0">{s.tags.map(t=> <span key={t} className="badge badge-primary ml-1">#{player.tags[t]}</span>)}</div>
                 </div>
+                
                 <p className="lyrics" 
                     ref={(lyrics) => this.lyrics = lyrics} 
                     style={ {marginRight: safari ? '-7rem' : '', 
@@ -200,48 +176,9 @@ export default class Sheet extends Component {
                              lineHeight: this.getLineHeight() }}
                 >{s.display}</p>
 
-                { s.link && <Card className={"shadow border-left-primary video-card"} style={showVideo ?{}:{width:0}}>
-                    <Card.Body className='p-0'>
-                        <span className="btn-circle btn-danger shadow-sm video-button" 
-                        style={{marginLeft:showVideo? '-1.5rem':'-2.2rem', borderRadius:showVideo? '50%':'50% 0 0 50%'}}
-                    onClick={this.handleVideo}>
-                            <i className={"fas fa-sm text-white-50 " + (showVideo? 'fa-angle-right':'fa-angle-left')}/>
-                        </span>
-                        {(showVideo || this.state.iframe) && <iframe title='Yt' onLoad={() => this.setState({iframe: true})} frameBorder={0} width='100%'
-                                 height={120} allowFullScreen={0} src={player.getYoutubeEmbed(s.link)} style={{marginBottom:-7}}/>}
-                    </Card.Body>
-                </Card>}
-
-
-                <span className='flying-button text-center'>
-                    <span className="btn-circle btn-sm btn-danger shadow-sm mb-2" onClick={this.copyToClipboard}>
-                        {!this.state.copied && <i className="fas fa-clipboard fa-sm text-white-50"/>}
-                        {this.state.copied && <i className="fas fa-check fa-sm text-white-50"/>}
-                        </span>
-                    <span className="btn-circle btn-warning shadow-sm mb-2" onClick={this.handleEdit}>
-                        <i className="fas fa-edit fa-sm text-white-50"/>
-                    </span>
-                    <span>
-                        <span className="btn-circle btn-success shadow-sm mb-2" 
-                            style={{borderRadius:'50% 0 0 50%'}}
-                            onClick={this.handleSizeUp}>
-                        <i className="fas fa-plus fa-sm text-white-50"/>
-                        </span>
-                        <span className='bg-success text-white-50 p-2 shadow-sm' onClick={this.handleSizeReset}>{fontSize}</span>
-                        <span className="btn-circle btn-success shadow-sm mb-2" 
-                            style={{borderRadius:'0 50% 50% 0'}}
-                            onClick={this.handleSizeDown}>
-                        <i className="fas fa-minus fa-sm text-white-50"/>
-                    </span>
-                    </span>
-                    <span className={"btn btn-icon-split" + (this.state.autoscroll? ' btn-success':' btn-primary')} onClick={this.handleScroll}>
-                        <span className='icon text-white-50'>
-                            <i className="fas fa-angle-down fa-sm text-white-50"/>
-                        </span>
-                        <span className='text'>Autoscroll</span>
-                    </span>
-                </span>
-            </div>
+                <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={this.handleScroll} copyText={s.display}/>
+                
+            </Fragment>
         );
     }
 }

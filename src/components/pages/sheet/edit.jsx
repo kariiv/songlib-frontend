@@ -8,6 +8,9 @@ import history from "../../../history";
 import Rating from 'react-rating'
 import { rankRange } from "../../../assets/app/playlist/PlaylistStrategy";
 
+import {EditToolbar, NavToolbar} from "./toolbar";
+
+
 export default class Edit extends Component {
 
     constructor(props) {
@@ -48,6 +51,11 @@ export default class Edit extends Component {
             rank: rank || 0,
         }, cb)
     }
+    
+    handleExitEdit = () => {
+        data ? player.setSong(data.s) : history.push('/');
+    }
+    
     handleDelete = () => { deleteSong(this.props.data.s.id, () => this.props.player.reloadLibrary()) }
     
     handleArtistListShow = () => {
@@ -64,11 +72,23 @@ export default class Edit extends Component {
         const split = this.state.lyrics.split('\n');
         const rows = split.length;
         const cols = Math.max.apply(null, split.map(l => l.length))
+        
+        const {c, p, s} = data? data : {};
+        
+        const navText = data ? {
+            now: s.index,
+            total: p.songs.length,
+            level: s.transpose
+        } : {};
+        
         return (
             <React.Fragment>
                 {data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name} 
                 <i className='fas fa-angle-right'/> {data.s.title}</h5>}
-                {!data && <h4>New song</h4>}
+                {!data && <h5>New song</h5>}
+                
+                {data && <NavToolbar prev={handlePrev} rand={handleRand} next={handleNext} up={()=>{}} down={()=>{}} text={navText} />}
+                
                 <Row>
                     <Col xs={12} sm={8} md={6} lg={4} className='mb-3'>
                         <Form.Group className='mb-1'>
@@ -110,6 +130,7 @@ export default class Edit extends Component {
                                 onChange={(v)=> v ? this.setState({tags: v.map(o => o.value)}) : this.setState({tags:[]})}
                             />
                         </div>
+                        
                         <Rating
                             start={-1} stop={4}
                             initialRating={this.state.rank}
@@ -117,8 +138,19 @@ export default class Edit extends Component {
                             emptySymbol="fas fa-fw fa-star text-gray-300"
                             fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
                         /> { rankRange[this.state.rank] }
+                        
+                        <span className="btn-circle btn-sm btn-info shadow-sm ml-3" onClick={this.handleTransposeDown}>
+                            <i className="fas fa-angle-down fa-sm text-white-50"/>
+                        </span>
+                        
+                        <strong className='text-black mr-1 ml-1'>{s.transpose}</strong>
+                        
+                        <span className="btn-circle btn-sm btn-info shadow-sm" onClick={this.handleTransposeUp}>
+                            <i className="fas fa-angle-up fa-sm text-white-50"/>
+                        </span>
                     </Col>
                 </Row>
+                
                 <textarea
                     wrap='off'
                     className='lyrics edit-textarea'
@@ -127,18 +159,13 @@ export default class Edit extends Component {
                     value={this.state.lyrics}
                     onChange={(e) => this.setState({lyrics: e.target.value})}
                 />
-                <span className='flying-button text-center'>
-                    {this.props.data && <span className="btn-circle btn-sm btn-danger shadow-sm mb-2" onClick={this.handleDelete}>
-                            <i className="fas fa-trash fa-sm text-white-50"/></span>}
-                    <span className="btn-circle btn-warning shadow-sm mb-2" onClick={() => {
-                        data ? player.setSong(data.s) : history.push('/');
-                    }}>
-                            <i className="fas fa-door-open fa-sm text-white-50"/></span>
-                    <span className="btn-circle btn-lg btn-success shadow-sm" onClick={this.handleSave}>
-                        <i className="fas fa-check fa-sm text-white-50"/></span>
-                </span>
-
+                
+                <EditToolbar onLeave={this.handleExitEdit} onDelete={data?this.handleDelete:''} onSave={this.handleSave} />
+                
             </React.Fragment>
         )
     }
 }
+
+
+
