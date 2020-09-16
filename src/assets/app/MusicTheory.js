@@ -8,6 +8,13 @@ export default class MusicTheory {
 
     static rexNotes = new RegExp(`${this.prefix}(${this.noteArrayAll.join("|")})(${this.extensions}|${this.suffix})`, "gm");
     static prefLink = [10];
+    
+    static transposeLyrics(lyrics, count) {
+        return count === 0 ? lyrics : lyrics.replace(
+            MusicTheory.rexNotes,
+            (full, note, ext) => MusicTheory.transposeNote(note, count) + ext
+        );
+    }
 
     static transposeNote(note, count) {
         const _note = note.trim();

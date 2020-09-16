@@ -13,10 +13,6 @@ class PlaylistStrategy  {
         throw new Error('Playlist function not implemented!')
     }
 
-    refreshPlaylist() {
-        throw new Error('Refresh function not implemented!')
-    }
-
     getPlaylist(name) {
         return name ? this.playlists[name.toLowerCase()] : Object.values(this.playlists)[0];
     }
@@ -38,7 +34,7 @@ export class AllStrategy extends PlaylistStrategy  {
     makePlaylists() {
         if (!this.player.songs) throw new Error('No songs at player');
         this.playlists = {
-            'all' : {name:'All', songs: Object.keys(this.player.songs) }
+            'all' : {name:'All', songs: this.player.getSongs() }
         }
     }
 }
@@ -53,7 +49,7 @@ export class ArtistStrategy extends PlaylistStrategy  {
         if (!this.player.songs) throw new Error('No songs included');
 
         this.playlists = {}
-        const songlist = Object.values(this.player.songs)
+        const songlist = this.player.getSongs()
         for (let song of songlist) {
             const artist = song.artist.trim();
             if (this.playlists[artist]) continue;
@@ -74,7 +70,7 @@ export class TagStrategy extends PlaylistStrategy  {
         if (!this.player.songs) throw new Error('No songs included');
         this.playlists = {}
 
-        const songlist = Object.values(this.player.songs)
+        const songlist = this.player.getSongs()
         for (let tag of Object.keys(this.player.tags)) {
             const tagNr = parseInt(tag);
             let songs = songlist.filter(s => s.tags.includes(tagNr)).map(s => s.id);
@@ -91,7 +87,7 @@ export class LinkStrategy extends PlaylistStrategy  {
     makePlaylists() {
         if (!this.player.songs) throw new Error('No songs included');
 
-        const songlist = Object.values(this.player.songs)
+        const songlist = this.player.getSongs();
         this.playlists = {
             'linked' : { name: 'Linked', songs: songlist.filter(s => !!s.link).map(s => s.id)},
             'unlinked': { name: 'Unlinked', songs: songlist.filter(s => !!!s.link).map(s => s.id)}
@@ -117,27 +113,11 @@ export class RankStrategy extends PlaylistStrategy  {
         if (!this.player.songs) throw new Error('No songs included');
         this.playlists = {}
 
-        const songlist = Object.values(this.player.songs)
+        const songlist = this.player.getSongs()
         for (const n of Object.keys(rankRange)) {
             const nr = parseInt(n)
             let songs = songlist.filter(s => s.rank === nr).map(s => s.id);
             if (songs.length >= this.MIN) this.playlists[rankRange[n].toLowerCase()] = { name: rankRange[n], songs }
-        }
-    }
-}
-
-export class CollectionStrategy extends PlaylistStrategy  {
-    constructor(player, MIN_PLAYLIST_SIZE) {
-        super(player,'Collection', 'fa-th-list', MIN_PLAYLIST_SIZE)
-    }
-
-    makePlaylists() {
-        if (!this.player.songs) throw new Error('No songs included');
-        if (!this.player.collections) throw new Error('No collections included');
-        this.playlists = {}
-
-        for (const col of Object.keys(this.player.collections)) {
-            if (this.player.collections[col].length >= this.MIN) this.playlists[col.toLowerCase()] = { name: col, songs: this.player.collections[col] }
         }
     }
 }
@@ -164,7 +144,7 @@ export class LangStrategy extends PlaylistStrategy  {
         if (!this.player.songs) throw new Error('No songs included');
 
         this.playlists = {}
-        const songlist = Object.values(this.player.songs)
+        const songlist = this.player.getSongs()
         for (let song of songlist) {
             const artist = song.artist.trim();
             if (this.playlists[artist]) continue;

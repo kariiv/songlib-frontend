@@ -2,6 +2,7 @@ import SongBuilder from './Songbuilder';
 import MusicTheory from './MusicTheory';
 
 import { getAllSongs, getSong } from '../../actions/songs';
+import Song from './Song';
 import { getAllTags } from '../../actions/tags';
 import history from '../../history';
 import queryString from 'query-string';
@@ -26,64 +27,74 @@ class Player {
 
     constructor(component) {
         this.component = component;
-        this.fullLyrics = true;
-        this.sorts = {}
-
-        this.collections = {};
+        
+        this.songs = {};
+        this.tags = {};
+        
+        this.playlistStrategies = {};
+        this.sorts = {};
+        
+        this.loaded = false;
         this.init();
+        
+        this.addStrategy(new AllStrategy(this))
+        this.addStrategy(new ArtistStrategy(this,4))
+        this.addStrategy(new RankStrategy(this))
+        this.addStrategy(new TagStrategy(this, 5))
+        this.addStrategy(new LinkStrategy(this))
+        this.addStrategy(new HistoryStrategy(this))fj
+        
         this.addSorter(new BaseSorter());
     }
-    _songsToDict = (songs) => songs.forEach(s => this.songs[s.id] = s)
+    
+    getSongs() {
+        return Object.keys(this.songs);
+    }
+    
+    _songsToDict = (songs) => {
+        const re = {};
+        songs.forEach(s => re[s.id] = s);
+        return re;
+    }
 
     refreshComponent = () => this.component.setState({player: this})
 
-    init = (e) => {
+    init = async (e) => {
         if (e) e.preventDefault()
-        this.songs = this.songs || {};
-        this.tags = this.tags || {};
-        this.playlistStrategies = this.playlistStrategies || {};
-
-        this.loaded = false;
-        getAllSongs((songs) => {
-            this._songsToDict(songs)
-            this.playlistStrategies = {}
-
-            this.addStrategy(new AllStrategy(this))
-            this.addStrategy(new ArtistStrategy(this,4))
-            this.addStrategy(new RankStrategy(this))
-
-            getAllTags((tags) => {
-                this.tags = tags;
-                this.loaded = true;
-
-                this.addStrategy(new TagStrategy(this, 5))
-                this.addStrategy(new LinkStrategy(this))
-                this.addStrategy(new HistoryStrategy(this))
-                this.refreshComponent();
-            });
-        });
+        
+        this.songs = await this.getAllSongs();
+        this.tags = await getAllTags();
+        
+        Object.values(this.playlistStrategies).forEach(strat => strat.makePlaylists())
+        this.loaded = true;
+        this.refreshComponent();
     }
-
-    reloadLibrary(cb) {
-        getAllSongs((songs) => {
-            this.songs = {}
-            this._songsToDict(songs)
-            Object.values(this.playlistStrategies).forEach(strat => strat.makePlaylists())
-            this.refreshComponent();
-            if (cb) cb()
-        });
+    
+    async getAllSongs() {
+        const songs = await getAllSongs();
+        return this._songsToDict(songs.map(s => new Song(s)));
     }
-    reloadTags() {
-        getAllTags((tags) => {
-            this.tags = tags;
-            this.refreshComponent();
-        });
+    
+    async getSongLyrics(id) {
+        return (await getSong(id)).lyrics;
     }
+    
 
     addStrategy(strategy) {
-        if (this.playlistStrategies[strategy.name]) throw new Error('Strategy already exists');
+        if (this.playlistStrategies[strategy.name]) return console.log('Strategy already exists')
         this.playlistStrategies[strategy.name] = strategy;
     }
+    
+    removeStrategy(strategy) {
+        if (!this.playlistStrategies[strategy.name]) return console.log('Strategy not exist')
+        del this.playlistStrategies[strategy.name];
+    }
+    
+    getStrategies() {
+        return Object.values(this.playlistStrategies);
+    }
+    
+    
     addSorter(sorter) {
         sorter.sorts.forEach(s => this.sorts[s.id]? console.log('Already in list'): this.sorts[s.id] = s);
     }
@@ -147,22 +158,12 @@ class Player {
 
         return {c: collection, p: playlist, s: song};
     }
+    
     _prepareSong(song) {
-        if (song.transpose === undefined) song.transpose = 0;
-
         if (!song.lyrics) getSong(song.id, (s) => {
             song.lyrics = s.lyrics;
-            this._lyricsBuild(song);
             this.refreshComponent()
         });
-    }
-    getYoutubeEmbed = (url) => Player.getYoutubeEmbed(url)
-
-    static getYoutubeEmbed(url) {
-        return url.replace("watch?v=", "embed/") + "?rel=0&modestbranding=1&autohide=1&showinfo=0&playsinline=1";
-    }
-    _lyricsBuild(song) {
-        song.display = this.fullLyrics ? SongBuilder.getFullLyrics(song.lyrics) : SongBuilder.getOriginalLyrics(song.lyrics);
     }
 
     getQueryUrl({c, p, s, sort}) {

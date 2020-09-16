@@ -1,18 +1,12 @@
 import login from "./login";
 import Swal from "sweetalert2";
 
-export const getAllSongs = (cb) => {
-    if (!cb) return;
-    fetch("http://dijkstra.cs.ttu.ee/~kariiv/cgi-bin/music/get_songs.py") // id, tags, title, artist, updated,
-        .then(data => data.json())
-        .then(json => cb(json));
+export const getAllSongs = async () => {
+    return await (await fetch("http://dijkstra.cs.ttu.ee/~kariiv/cgi-bin/music/get_songs.py")).json();
 }
 
-export const getSong = (id, cb) => {
-    if (!cb || !id) return;
-    fetch("http://dijkstra.cs.ttu.ee/~kariiv/cgi-bin/music/get_songs.py?id="+id)
-        .then(data => data.json())
-        .then(json => cb(json));
+export const getSong = async (id) => {
+    return await (await fetch("http://dijkstra.cs.ttu.ee/~kariiv/cgi-bin/music/get_songs.py?id="+id)).json();
 }
 
 export const deleteSong = (id, successCallback) => {
