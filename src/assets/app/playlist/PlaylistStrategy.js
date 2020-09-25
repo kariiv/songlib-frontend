@@ -34,7 +34,7 @@ export class AllStrategy extends PlaylistStrategy  {
     makePlaylists() {
         if (!this.player.songs) throw new Error('No songs at player');
         this.playlists = {
-            'all' : {name:'All', songs: this.player.getSongs() }
+            'all' : {name:'All', songs: this.player.getSongsId() }
         }
     }
 }
@@ -46,10 +46,8 @@ export class ArtistStrategy extends PlaylistStrategy  {
     }
 
     makePlaylists() {
-        if (!this.player.songs) throw new Error('No songs included');
-
         this.playlists = {}
-        const songlist = this.player.getSongs()
+        const songlist = this.player.getSongsData()
         for (let song of songlist) {
             const artist = song.artist.trim();
             if (this.playlists[artist]) continue;
@@ -66,11 +64,9 @@ export class TagStrategy extends PlaylistStrategy  {
     }
 
     makePlaylists() {
-        if (!this.player.tags) throw new Error('No tags included');
-        if (!this.player.songs) throw new Error('No songs included');
         this.playlists = {}
 
-        const songlist = this.player.getSongs()
+        const songlist = this.player.getSongsData()
         for (let tag of Object.keys(this.player.tags)) {
             const tagNr = parseInt(tag);
             let songs = songlist.filter(s => s.tags.includes(tagNr)).map(s => s.id);
@@ -85,8 +81,6 @@ export class LinkStrategy extends PlaylistStrategy  {
     }
 
     makePlaylists() {
-        if (!this.player.songs) throw new Error('No songs included');
-
         const songlist = this.player.getSongs();
         this.playlists = {
             'linked' : { name: 'Linked', songs: songlist.filter(s => !!s.link).map(s => s.id)},

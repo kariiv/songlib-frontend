@@ -1,8 +1,7 @@
-import SongBuilder from './Songbuilder';
 import MusicTheory from './MusicTheory';
 
 import { getAllSongs, getSong } from '../../actions/songs';
-import Song from './Song';
+import Song from './object/Song';
 import { getAllTags } from '../../actions/tags';
 import history from '../../history';
 import queryString from 'query-string';
@@ -10,11 +9,11 @@ import queryString from 'query-string';
 import {
     AllStrategy,
     // LatestStrategy,
-    ArtistStrategy,
-    TagStrategy,
-    LinkStrategy,
-    RankStrategy,
-    HistoryStrategy,
+    // ArtistStrategy,
+    // TagStrategy,
+    // LinkStrategy,
+    // RankStrategy,
+    // HistoryStrategy,
     // CollectionStrategy
 } from './playlist/PlaylistStrategy';
 
@@ -27,9 +26,15 @@ class Player {
 
     constructor(component) {
         this.component = component;
+
+        this.me = ''; // User()
         
         this.songs = {};
         this.tags = {};
+
+        this.artist_like = [];
+        this.song_like = [];
+        this.user_follow = [];
         
         this.playlistStrategies = {};
         this.sorts = {};
@@ -38,23 +43,25 @@ class Player {
         this.init();
         
         this.addStrategy(new AllStrategy(this))
-        this.addStrategy(new ArtistStrategy(this,4))
-        this.addStrategy(new RankStrategy(this))
-        this.addStrategy(new TagStrategy(this, 5))
-        this.addStrategy(new LinkStrategy(this))
-        this.addStrategy(new HistoryStrategy(this))fj
+        // this.addStrategy(new ArtistStrategy(this,4))
+        // this.addStrategy(new RankStrategy(this))
+        // this.addStrategy(new TagStrategy(this, 5))
+        // this.addStrategy(new LinkStrategy(this))
+        // this.addStrategy(new HistoryStrategy(this))
         
         this.addSorter(new BaseSorter());
     }
     
-    getSongs() {
+    getSongsId() {
         return Object.keys(this.songs);
     }
-    
-    _songsToDict = (songs) => {
-        const re = {};
-        songs.forEach(s => re[s.id] = s);
-        return re;
+    getSongsData() {
+        return Object.values(this.songs);
+    }
+
+    _mapToDict(data, key) {
+        if (!key) return {}
+        return data.reduce((a,x) => ({...a, [x[key]]: x}), {})
     }
 
     refreshComponent = () => this.component.setState({player: this})
@@ -72,13 +79,12 @@ class Player {
     
     async getAllSongs() {
         const songs = await getAllSongs();
-        return this._songsToDict(songs.map(s => new Song(s)));
+        return this._mapToDict(songs.map(s => new Song(s)), 'id');
     }
     
     async getSongLyrics(id) {
         return (await getSong(id)).lyrics;
     }
-    
 
     addStrategy(strategy) {
         if (this.playlistStrategies[strategy.name]) return console.log('Strategy already exists')
@@ -86,8 +92,9 @@ class Player {
     }
     
     removeStrategy(strategy) {
-        if (!this.playlistStrategies[strategy.name]) return console.log('Strategy not exist')
-        del this.playlistStrategies[strategy.name];
+        if (!this.playlistStrategies[strategy.name]) return console.log('Strategy not exist');
+
+        delete this.playlistStrategies[strategy.name];
     }
     
     getStrategies() {

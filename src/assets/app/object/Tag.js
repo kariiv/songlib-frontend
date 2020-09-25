@@ -12,5 +12,9 @@ export default class Tag {
     getSongs() {
         return
     }
-    
+
+    addSong(song) {
+        if (this.songs.find(s => s.id === song.id)) return console.log('Song already listed')
+        this.songs.push(song);
+    }
 }

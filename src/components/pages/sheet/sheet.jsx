@@ -7,6 +7,7 @@ import Rating from 'react-rating'
 import { safari } from "../../../config";
 
 import {SheetToolbar, NavToolbar} from "./toolbar";
+import SheetHistory from "../gadgets/sheetHistory";
 
 
 export default class Sheet extends Component {
@@ -19,9 +20,10 @@ export default class Sheet extends Component {
     static MAX_FONT = 28;
     static MIN_FONT = 4;
     static NORMAL_FONT = 14;
+    static FONT_SIZE_KEY = 'f_s'
 
     state = {
-        fontSize: Sheet.NORMAL_FONT
+        fontSize: parseInt(localStorage.getItem(Sheet.FONT_SIZE_KEY)) || Sheet.NORMAL_FONT
     }
 
     handleKeyDown = (e) => {
@@ -60,7 +62,6 @@ export default class Sheet extends Component {
     }
     
     componentDidMount() {
-        this.makeHistoryTimeout();
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
@@ -79,22 +80,26 @@ export default class Sheet extends Component {
         if (controller.state.autoscroll) controller.handleScroll()
         player.editSong(data)
     }
-
     
     handleSizeUp = () => {
         const { fontSize } = this.state;
         if (fontSize < Sheet.MAX_FONT)
-        this.setState({fontSize: fontSize + 1});
+            this.setFontSize(fontSize + 1);
     }
     handleSizeDown = () => {
         const { fontSize } = this.state;
         if (fontSize > Sheet.MIN_FONT)
-        this.setState({fontSize: fontSize - 1});
+            this.setFontSize(fontSize - 1);
     }
     handleSizeReset = () => {
         const { fontSize } = this.state;
         if (fontSize !== Sheet.NORMAL_FONT)
-        this.setState({fontSize: Sheet.NORMAL_FONT});
+            this.setFontSize(Sheet.NORMAL_FONT);
+    }
+
+    setFontSize = (size) => {
+        localStorage.setItem(Sheet.FONT_SIZE_KEY, size)
+        this.setState({fontSize: size});
     }
     
     getLineHeight = () => {
@@ -153,6 +158,7 @@ export default class Sheet extends Component {
                              lineHeight: this.getLineHeight() }}
                 >{s.display}</p>
 
+                <SheetHistory data={data} player={player}/>
                 <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={controller.handleScroll} copyText={s.display} autoscroll={controller.state.autoscroll} fontSize={fontSize}/>
             </Fragment>
         );

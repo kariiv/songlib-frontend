@@ -1,24 +1,29 @@
 export default class Artist {
 
-    constructor({id, name, created_at) {
+    constructor({id, name, created_at}) {
+        this.id = id;
         this.name = name;
         this.createdAt = created_at;
+
         this.songs = [];
+    }
+
+    addSong() {
+
     }
     
     getSongs() {
-    
-    
+
         return 
     }
+
+
     
-    follow() {
+    userFollow(user) {
         
     }
     
-    unfollow() {
+    userUnfollow(user) {
     
     }
-    
-    
 }

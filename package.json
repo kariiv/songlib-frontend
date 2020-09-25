@@ -1,10 +1,10 @@
 {
-  "name": "songlib",
-  "version": "2.1.0",
+  "name": "guitablist",
+  "version": "2.2.0",
   "private": true,
   "description": "Tab songs and make collections",
   "author": "Mr.Toruabi",
-  "homepage": "/~kariiv/music2/",
+  "homepage": "/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",

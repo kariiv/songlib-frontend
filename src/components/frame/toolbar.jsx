@@ -1,16 +1,56 @@
 import React, { Component } from "react";
 
 class Toolbar extends Component {
+
+    static UP = 38;
+    static DOWN = 40;
+    static SELECT = 13;
+    static CLEAR = 27;
+
     constructor(props) {
         super(props);
         this.state = {
-            search: ''
+            search: '',
+            results: [],
+
         }
         this.search = React.createRef();
     }
 
+    handleKeyDown = (e) => {
+        console.log(e.keyCode)
+        if (!this.state.search) return
+        switch( e.keyCode ) {
+            case Toolbar.UP:
+                console.log('Focus up')
+                e.preventDefault();
+                break;
+            case Toolbar.DOWN:
+                console.log('Focus down')
+                e.preventDefault();
+                break;
+            case Toolbar.SELECT:
+                console.log('Select')
+                e.preventDefault();
+                break;
+            case Toolbar.CLEAR:
+                this.handleClear();
+                e.preventDefault();
+                break;
+            default:
+                break;
+        }
+    }
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    }
+
     handleSearch = (e) => {
-        this.setState({ search: e.target.value})
+        const search = e.target.value
+        this.setState({ search, results: search ? this.props.player.searchSongs(search) : []})
     }
 
     handleClear = () => {
@@ -20,7 +60,6 @@ class Toolbar extends Component {
     render() {
         const { sideToggle, player } = this.props;
         const { search } = this.state;
-        const searchRes = search ? player.searchSongs(search): [];
 
         return (
             <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" style={{maxWidth: '100vw'}}>
@@ -49,7 +88,7 @@ class Toolbar extends Component {
                                 </div>
                             </div>
                             <div className={"dropdown-list dropdown-menu shadow animated--grow-in scroll search" + (search && ' show')}>
-                                {searchRes.map(s => <SongResult key={s.artist+s.title} doClear={this.handleClear} song={s} player={player} search={search}/>)}
+                                {this.state.results.map(s => <SongResult key={s.artist+s.title} doClear={this.handleClear} song={s} player={player} search={search}/>)}
                             </div>
                         </form>
                     </li>
