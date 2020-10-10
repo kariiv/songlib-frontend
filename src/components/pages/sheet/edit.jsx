@@ -3,6 +3,7 @@ import {Col, Row,Form } from "react-bootstrap";
 import Select from 'react-select';
 
 import { saveSong, deleteSong } from '../../../actions/songs'
+import { getUGData } from '../../../actions/ug'
 
 import history from "../../../history";
 import Rating from 'react-rating'
@@ -32,6 +33,13 @@ export default class Edit extends Component {
                 link: s.link || '',rank: s.rank || 0,
             }
         } else return {title: '', artist: '', tags: [], lyrics:'Lyrics...', link: '',rank: 0,}
+    }
+
+    dataFromUltimateGuitar = () => {
+        getUGData((data) => {
+            const { artist, lyrics, title } = data
+            this.setState({artist, title, lyrics})
+        })
     }
 
     handleSave = () => {
@@ -91,7 +99,12 @@ export default class Edit extends Component {
                 {data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name} 
                 <i className='fas fa-angle-right'/> {data.s.title}</h5>}
                 {!data && <h5>New song</h5>}
-                
+                {!data && <span className="btn btn-warning btn-icon-split" onClick={this.dataFromUltimateGuitar}>
+                    <span className="icon text-white-50">
+                      <i className="fas fa-cloud-download-alt"/>
+                    </span>
+                    <span className="text">Ultimate Guitar</span>
+                </span> }
                 {data && <NavToolbar prev={handlePrev} rand={handleRand} next={handleNext} up={()=>{}} down={()=>{}} text={navText} />}
                 
                 <Row>
