@@ -2,7 +2,9 @@ import React, {Component} from "react";
 import {Col, Row,Form } from "react-bootstrap";
 import Select from 'react-select';
 
-import { saveSong, deleteSong } from '../../../actions/songs'
+import LANGUAGES_DICT, { LANGUAGES_SELECT } from "../../../assets/app/langs";
+
+import SongProvider from '../../../assets/app/provider/SongProvider'
 import { getUGData } from '../../../actions/ug'
 
 import history from "../../../history";
@@ -10,29 +12,17 @@ import Rating from 'react-rating'
 import { rankRange } from "../../../assets/app/playlist/PlaylistStrategy";
 
 import {EditToolbar, NavToolbar} from "./toolbar";
+import Song from "../../../assets/app/object/Song";
 
 
 export default class Edit extends Component {
 
     constructor(props) {
         super(props);
-        this.state = this.getStates()
+        this.state = {}
+        this.state["song"] = this.props.data ? new Song(this.props.data.s) : new Song({})
+        if (!this.state.song.lyrics) this.state.song.lyrics = "Lyrics..."
         this.state['artistList'] = false;
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!!this.props.data !== !!prevProps.data)
-            this.setState(this.getStates())
-    }
-
-    getStates() {
-        if (this.props.data) {
-            const {s} = this.props.data;
-            return {title: s.title || '', artist: s.artist || '',
-                tags: s.tags || [], lyrics: s.lyrics || 'Lyrics...',
-                link: s.link || '',rank: s.rank || 0,
-            }
-        } else return {title: '', artist: '', tags: [], lyrics:'Lyrics...', link: '',rank: 0,}
     }
 
     dataFromUltimateGuitar = () => {
@@ -42,22 +32,14 @@ export default class Edit extends Component {
         })
     }
 
-    handleSave = () => {
-        const { title, artist, tags, lyrics, link, rank } = this.state;
-        const id = this.props.data ? this.props.data.s.id : '';
-        const cb = this.props.data ?
-            () => this.props.player.reloadLibrary() :
-            (id) => this.props.player.reloadLibrary(() => history.push('/play/?s='+id))
+    handleSave = async () => {
+        const res = await this.state.song.save()
 
-        saveSong({
-            id,
-            title: title || '',
-            artist: artist || '',
-            tags: tags.length > 0 ? tags.join(' '):'',
-            lyrics: lyrics || '',
-            link: link || '',
-            rank: rank || 0,
-        }, cb)
+        if (res && (res.data || res.info)) {
+            await this.props.player.init()
+            const id = this.state.song.id || res.data
+            if (id) history.push('/play/?s=' + id)
+        }
     }
     
     handleExitEdit = () => {
@@ -65,20 +47,63 @@ export default class Edit extends Component {
         data ? player.setSong(data.s) : history.push('/');
     }
     
-    handleDelete = () => { 
-        deleteSong(this.props.data.s.id, this.props.player.reloadLibrary);
+    handleDelete = async () => {
+        await SongProvider.delete(this.props.data.s.id)
+        this.props.player.init()
     }
-    
+
     handleArtistListShow = () => {
-        this.setStage({artistList: true})
+        this.setState({artistList: true})
     }
     handleArtistListHide = () => {
-        this.setStage({artistList: false})
+        this.setState({artistList: false})
     }
+
+    handleTitle = (e) => {
+        const {song} = this.state
+        song.title = e.target.value
+        this.setState({song})
+    }
+    handleArtist = (e) => {
+        const {song} = this.state
+        song.artist = e.target.value
+        this.setState({song})
+    }
+    handleLink = (e) => {
+        const {song} = this.state
+        song.link = e.target.value
+        this.setState({song})
+    }
+    handleTag = (v) => {
+        const {song} = this.state
+
+        if (!v) song.tags = []
+        else song.tags = v.map(t => t.value)
+        this.setState({song})
+    }
+    handleRating = (e) => {
+        const {song} = this.state
+        song.rank = e
+        this.setState({song})
+    }
+    handleLang = (v) => {
+        const {song} = this.state
+        song.lang = v ? v.value : ''
+        this.setState({song})
+    }
+    handleLyrics = (e) => {
+        const {song} = this.state
+        song.lyrics = e.target.value
+        this.setState({song})
+    }
+
+
 
     render() {
         const {data, player, controller} = this.props;
-        const {artistList, rank, lyrics, title, artist, link, tags} = this.state;
+
+        const {artistList, song} = this.state
+        const { rank, lyrics, title, artist, link, lang, tags} = song;
         
         const {handlePrev, handleNext, handleRand} = data ? controller:{};
 
@@ -91,12 +116,12 @@ export default class Edit extends Component {
         const navText = data ? {
             now: s.index,
             total: p.songs.length,
-            level: s.transpose
+            level: s.getTransposition()
         } : {};
-        
+
         return (
             <React.Fragment>
-                {data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name} 
+                {!!data && <h5>Edit <i className='fas fa-angle-right'/> {data.p.name}
                 <i className='fas fa-angle-right'/> {data.s.title}</h5>}
                 {!data && <h5>New song</h5>}
                 {!data && <span className="btn btn-warning btn-icon-split" onClick={this.dataFromUltimateGuitar}>
@@ -105,8 +130,8 @@ export default class Edit extends Component {
                     </span>
                     <span className="text">Ultimate Guitar</span>
                 </span> }
-                {data && <NavToolbar prev={handlePrev} rand={handleRand} next={handleNext} up={()=>{}} down={()=>{}} text={navText} />}
-                
+                {data && <NavToolbar prev={handlePrev} rand={handleRand} next={handleNext} up={() => {}} down={() => {}} text={navText}/>}
+
                 <Row>
                     <Col xs={12} sm={8} md={6} lg={4} className='mb-3'>
                         <Form.Group className='mb-1'>
@@ -116,7 +141,7 @@ export default class Edit extends Component {
                                 type="text"
                                 placeholder="Title"
                                 value={title}
-                                onChange={(e)=>this.setState({title:e.target.value})}
+                                onChange={this.handleTitle}
                             />
 
                             <Form.Control
@@ -126,7 +151,7 @@ export default class Edit extends Component {
                                 value={artist}
                                 onFocus={this.handleArtistListShow}
                                 onBlur={this.handleArtistListHide}
-                      onChange={(e)=>this.setState({artist:e.target.value})}
+                                onChange={this.handleArtist}
                             />
                             {artistList && 'List'}
                             <Form.Control
@@ -134,40 +159,51 @@ export default class Edit extends Component {
                                 type="text"
                                 placeholder="Link"
                                 value={link}
-                                onChange={(e)=>this.setState({link:e.target.value})}
+                                onChange={this.handleLink}
                             />
                         </Form.Group>
-                  
+
+                        <div style={{color:'black'}} className="mb-1">
+                            <Select
+                                isClearable={true}
+                                closeMenuOnSelect={true}
+                                placeholder='Language...'
+                                options={LANGUAGES_SELECT}
+                                value={ (() => lang ? { value:lang, label: LANGUAGES_DICT[lang].label} : null)() }
+                                onChange={this.handleLang}
+                            />
+                        </div>
+
                         <div style={{color:'black'}}>
                             <Select
                                 closeMenuOnSelect={false}
                                 isMulti
                                 placeholder='Tags...'
-                                options={Object.keys(player.tags).map(k =>{ return {value: parseInt(k), label:player.tags[k]}})}
-                                value={tags.map( k => { return {value: k, label:player.tags[k]}})}
-                                onChange={(v)=> v ? this.setState({tags: v.map(o => o.value)}) : this.setState({tags:[]})}
+                                options={Object.values(player.tags).map(tag => { return {value: tag.getId(), label: tag.getName()}}) }
+                                value={tags.map(t => { return {value: t, label: player.tags[t].getName()}})}
+                                onChange={this.handleTag}
                             />
                         </div>
-                        
+
                         <Rating
                             start={-1} stop={4}
                             initialRating={rank}
-                            onChange={(v) => this.setState({rank:v}) }
+                            onChange={this.handleRating}
                             emptySymbol="fas fa-fw fa-star text-gray-300"
-                            fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)}
+                            fullSymbol={['danger','warning','primary','info','success'].map(c=> "fas fa-fw fa-star text-"+c)}
                         /> { rankRange[rank] }
                     </Col>
                 </Row>
-                
+
                 <textarea
                     wrap='off'
                     className='lyrics edit-textarea'
                     cols={cols - 1}
                     rows={rows}
                     value={lyrics}
-                    onChange={(e) => this.setState({lyrics: e.target.value})}
+                    onChange={this.handleLyrics}
                 />
-                
+
                 <EditToolbar onLeave={this.handleExitEdit} onDelete={data?this.handleDelete:''} onSave={this.handleSave} />
                 
             </React.Fragment>

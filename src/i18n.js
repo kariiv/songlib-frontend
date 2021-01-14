@@ -6,8 +6,7 @@ import detector from "i18next-browser-languagedetector";
 const supportedLangs = [
     {short:'en', name:'English'},
     {short:'ru', name:'Russian'},
-    {short:'et', name:"Eesti"},
-    {short:'fi', name: 'Suomi'}];
+    {short:'et', name:"Eesti"}];
 
 i18n.use(detector)
     .use(Backend)

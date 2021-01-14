@@ -72,7 +72,7 @@ export const NavDrop = ({label, icon, children, isActive, badge}) => {
         {badge && <span className={"badge badge-counter" + (badge.type ? badge.type: ' badge-danger')}>{badge.text}</span>}
         <span> {label || ''}</span>
     </NavLink>
-    <div className={"collapse" + (show?" show":'')} data-parent="#accordionSidebar">
+    <div className={"collapse" + (show?" show":'')}>
         <div className="bg-white py-2 collapse-inner rounded">
             {children}
         </div>

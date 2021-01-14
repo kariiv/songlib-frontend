@@ -95,7 +95,7 @@ a {
           rgba(136, 238, 195, 1) 0%,
           rgba(12, 81, 115, 1) 100%
   );
-  box-shadow: 0px 0px 7px gray;
+  box-shadow: 0 0 7px gray;
   top: 0;
   left: 0;
 }

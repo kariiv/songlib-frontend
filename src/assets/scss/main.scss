@@ -63,6 +63,7 @@
 .icon-shadow:hover {
   text-shadow: 1px 2px 1px gray;
 }
+
 .icon-trash-hover:hover {
   color: #e74a3b !important;
   cursor: pointer;
@@ -75,7 +76,7 @@
 .video-card {
   position: fixed;
   top: 0.2rem;
-  right: 0;
+  right: -1px;
   width: 16rem;
   transition: width 100ms;
   min-height: 120px;
@@ -86,4 +87,19 @@
 .recent-list {
   overflow-x: auto;
   max-height: 26rem;
+}
+
+.tag-list {
+  float: left;
+  font-size: 50%;
+}
+
+.mouse-shadow {
+  transition: box-shadow 80ms, transform 80ms;
+  user-select: none;
+}
+.mouse-shadow:hover {
+  box-shadow: 0 0.15rem 1.25rem 0 rgba(58, 59, 69, 0.15) !important;
+  transform: scale(1.005);
+  cursor: pointer;
 }

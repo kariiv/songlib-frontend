@@ -1,3 +1,5 @@
+import LANGUAGES_DICT from "../langs";
+
 class PlaylistStrategy  {
     constructor(player, name, icon, MIN_PLAYLIST_SIZE) {
         if (!player) throw new Error('No player included');
@@ -26,6 +28,7 @@ class PlaylistStrategy  {
 
 export default PlaylistStrategy;
 
+
 export class AllStrategy extends PlaylistStrategy  {
     constructor(player) {
         super(player, 'All','fa-music', 0)
@@ -47,11 +50,11 @@ export class ArtistStrategy extends PlaylistStrategy  {
 
     makePlaylists() {
         this.playlists = {}
-        const songlist = this.player.getSongsData()
-        for (let song of songlist) {
+        const songList = this.player.getSongs()
+        for (let song of songList) {
             const artist = song.artist.trim();
             if (this.playlists[artist]) continue;
-            const songs = songlist.filter(s => s.artist.trim() === artist).map(s => s.id)
+            const songs = songList.filter(s => s.artist.trim() === artist).map(s => s.id)
             if (songs.length >= this.MIN) this.playlists[artist.toLowerCase()] = { name: artist, songs }
         }
     }
@@ -66,11 +69,10 @@ export class TagStrategy extends PlaylistStrategy  {
     makePlaylists() {
         this.playlists = {}
 
-        const songlist = this.player.getSongsData()
-        for (let tag of Object.keys(this.player.tags)) {
-            const tagNr = parseInt(tag);
-            let songs = songlist.filter(s => s.tags.includes(tagNr)).map(s => s.id);
-            if (songs.length >= this.MIN) this.playlists[this.player.tags[tag].toLowerCase()] = { name: this.player.tags[tag], songs }
+        for (let tag of this.player.getTags()) {
+            let songs = tag.getSongs()
+            if (songs.length >= this.MIN)
+                this.playlists[tag.getName().toLowerCase()] = { name: tag.getName(), songs: songs.map(s => s.id) }
         }
     }
 }
@@ -81,10 +83,10 @@ export class LinkStrategy extends PlaylistStrategy  {
     }
 
     makePlaylists() {
-        const songlist = this.player.getSongs();
+        const songList = this.player.getSongs();
         this.playlists = {
-            'linked' : { name: 'Linked', songs: songlist.filter(s => !!s.link).map(s => s.id)},
-            'unlinked': { name: 'Unlinked', songs: songlist.filter(s => !!!s.link).map(s => s.id)}
+            'linked' : { name: 'Linked', songs: songList.filter(s => !!s.link).map(s => s.id)},
+            'unlinked': { name: 'Unlinked', songs: songList.filter(s => !!!s.link).map(s => s.id)}
         }
     }
 }
@@ -97,7 +99,6 @@ export const rankRange = {
     4: 'PlaySing'
 }
 
-
 export class RankStrategy extends PlaylistStrategy  {
     constructor(player) {
         super(player, 'Difficulty', 'fa-graduation-cap', 0)
@@ -107,10 +108,10 @@ export class RankStrategy extends PlaylistStrategy  {
         if (!this.player.songs) throw new Error('No songs included');
         this.playlists = {}
 
-        const songlist = this.player.getSongs()
+        const songList = this.player.getSongs()
         for (const n of Object.keys(rankRange)) {
             const nr = parseInt(n)
-            let songs = songlist.filter(s => s.rank === nr).map(s => s.id);
+            let songs = songList.filter(s => s.rank === nr).map(s => s.id);
             if (songs.length >= this.MIN) this.playlists[rankRange[n].toLowerCase()] = { name: rankRange[n], songs }
         }
     }
@@ -130,20 +131,25 @@ export class HistoryStrategy extends PlaylistStrategy  {
 
 
 export class LangStrategy extends PlaylistStrategy  {
-    constructor(player, MIN_PLAYLIST_SIZE) {
-        super(player,'Lang', 'fa-microphone', MIN_PLAYLIST_SIZE)
+    constructor(player) {
+        super(player,'Lang', 'fa-language', 0)
     }
 
     makePlaylists() {
         if (!this.player.songs) throw new Error('No songs included');
 
         this.playlists = {}
-        const songlist = this.player.getSongs()
-        for (let song of songlist) {
-            const artist = song.artist.trim();
-            if (this.playlists[artist]) continue;
-            const songs = songlist.filter(s => s.artist.trim() === artist).map(s => s.id)
-            if (songs.length >= this.MIN) this.playlists[artist.toLowerCase()] = { name: artist, songs }
+        for (let song of this.player.getSongs()) {
+            const lang = song.lang
+            let name;
+
+            if (lang in LANGUAGES_DICT) name = LANGUAGES_DICT[lang].name
+            else name = "None"
+
+            if (name.toLowerCase() in this.playlists)
+                this.playlists[name.toLowerCase()].songs.push(song.getId())
+            else
+                this.playlists[name.toLowerCase()] = {name, songs: [song.getId()]}
         }
     }
 }

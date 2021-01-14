@@ -24,14 +24,14 @@ class BaseSorter {
                 sort: (list, player) => list.sort((a, b) => player.songs[b].title.localeCompare(player.songs[a].title))
             },
             {
-                id: "time_asc",
+                id: "time_desc",
                 name: "Latest first",
-                sort: (list, player) => list.sort((a, b) => player.songs[a].time - player.songs[b].time)
+                sort: (list, player) => list.sort((a, b) => player.songs[b].time - player.songs[a].time)
             },
             {
-                id: "time_desc",
+                id: "time_asc",
                 name: "Oldest first",
-                sort: (list, player) => list.sort((a, b) => player.songs[b].time - player.songs[a].time)
+                sort: (list, player) => list.sort((a, b) => player.songs[a].time - player.songs[b].time)
             },
             {
                 id: "rank_asc",

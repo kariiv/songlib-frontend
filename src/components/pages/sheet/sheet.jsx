@@ -1,5 +1,6 @@
 import React, { Component, Fragment} from "react";
 import '../../../assets/scss/css.css';
+import LANGUAGES_DICT from "../../../assets/app/langs";
 
 import {capitalize} from '../../../config'
 import Rating from 'react-rating'
@@ -7,7 +8,7 @@ import Rating from 'react-rating'
 import { safari } from "../../../config";
 
 import {SheetToolbar, NavToolbar} from "./toolbar";
-import SheetHistory from "../gadgets/sheetHistory";
+import SheetHistory from "./gadgets/sheetHistory";
 
 
 export default class Sheet extends Component {
@@ -26,55 +27,7 @@ export default class Sheet extends Component {
         fontSize: parseInt(localStorage.getItem(Sheet.FONT_SIZE_KEY)) || Sheet.NORMAL_FONT
     }
 
-    handleKeyDown = (e) => {
-        if (e.shiftKey)
-            switch( e.keyCode ) {
-                case Sheet.TRANS_DOWN:
-                    this.handleTransposeDown()
-                    break;
-                case Sheet.TRANS_UP:
-                    this.handleTransposeUp()
-                    break;
-                case Sheet.SCROLL:
-                    this.handleScroll(e)
-                    break;
-                case Sheet.NEXT:
-                    this.handleNext(e)
-                    break;
-                case Sheet.PREVIOUS:
-                    this.handlePrev(e)
-                    break;
-                case Sheet.RANDOM:
-                    this.handleRand(e)
-                    break;
-                default:
-                    break;
-            }
-    }
-
-    componentWillUnmount() {
-        clearTimeout(this.historyTimeout);
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.data.s !== this.props.data.s) this.makeHistoryTimeout();
-    }
-    
-    componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
-    }
-
-    makeHistoryTimeout() {
-        clearTimeout(this.historyTimeout);
-        this.historyTimeout = setTimeout(this.handleHistory, 60000);
-    }
-
-    handleHistory = () => {
-        this.props.player.toHistory(this.props.data.s.id)
-    }
-
-    handleEdit = (e) => {
+    handleEdit = () => {
         const {player, controller, data} = this.props;
         setTimeout(controller.scrollTop);
         if (controller.state.autoscroll) controller.handleScroll()
@@ -110,11 +63,11 @@ export default class Sheet extends Component {
 
     handleTransposeDown = () => {
         const {data, player} = this.props;
-        player.transposeDown(data.s)
+        player.transposeCount(data.s, -1)
     }
     handleTransposeUp = () => {
         const {data, player} = this.props;
-        player.transposeUp(data.s);
+        player.transposeCount(data.s, 1);
     }
     
 
@@ -127,7 +80,7 @@ export default class Sheet extends Component {
         const navText = {
             now: s.index,
             total: p.songs.length,
-            level: s.transpose
+            level: s.getTransposition()
         }
 
         return (
@@ -138,25 +91,26 @@ export default class Sheet extends Component {
 
                 <div className="titles mb-3">
                     <h3 className="title">{s.title}</h3>
-                    
+
                     <h6 className="artist mb-0"> {s.artist}</h6>
-                    
+                    {s.lang && <h6 className="mb-0">{LANGUAGES_DICT[s.lang].label}</h6>}
+
                     <Rating
                         start={-1} stop={4}
                         initialRating={s.rank}
                         emptySymbol="fas fa-fw fa-star text-gray-300"
                         fullSymbol={['danger','warning','primary','info','success', ].map(c=> "fas fa-fw fa-star text-"+c)} readonly
                     />
-                    
-                    <div className="tags-text mb-0">{s.tags.map(t=> <span key={t} className="badge badge-primary ml-1">#{player.tags[t]}</span>)}</div>
+
+                    <div className="tags-text mb-0">{s.getTags().map(t => <span key={t.getId()} className="badge badge-primary ml-1">#{t.getName()}</span>)}</div>
                 </div>
                 
-                <p className="lyrics" 
-                    ref={(lyrics) => this.lyrics = lyrics} 
-                    style={ {marginRight: safari ? '-7rem' : '', 
+                <p className="lyrics"
+                    ref={(lyrics) => this.lyrics = lyrics}
+                    style={ {marginRight: safari ? '-7rem' : '',
                              fontSize: this.state.fontSize,
                              lineHeight: this.getLineHeight() }}
-                >{s.display}</p>
+                >{s.display()}</p>
 
                 <SheetHistory data={data} player={player}/>
                 <SheetToolbar onEdit={this.handleEdit} onFontIn={this.handleSizeUp} onFontOut={this.handleSizeDown} onFontReset={this.handleSizeReset} onScroll={controller.handleScroll} copyText={s.display} autoscroll={controller.state.autoscroll} fontSize={fontSize}/>

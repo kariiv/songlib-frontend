@@ -16,8 +16,8 @@ import Toolbar from './frame/toolbar';
 import Footer from './frame/footer';
 
 import SongController from './pages/sheet/songController';
-import Home from './pages/home';
-import Tag from './pages/tag';
+import Home from './pages/home/home';
+import Tag from './pages/tag/tag';
 
 import {Container} from 'react-bootstrap'
 import '../assets/scss/frame/sb-admin-2.scss';
@@ -44,7 +44,7 @@ class App extends Component {
     render() {
       const {hasError,error,info, player} = this.state;
         return (
-            <React.Fragment>
+            <>
                 <Sidebar toggled={true}>
                     <SidebarHead brand={<>Songs <sup>2.0</sup></>} icon='fa-music'/>
                     <Devider/>
@@ -91,8 +91,7 @@ class App extends Component {
 
                     <Footer/>
                 </div>
-
-            </React.Fragment>
+            </>
         )
     }
 }

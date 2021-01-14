@@ -8,15 +8,14 @@ import Edit from './edit';
 
 
 export default class SheetController extends Component {
-    
-    static TRANS_UP = 87;
-    static TRANS_DOWN = 83;
 
     state = {
         videoLoaded: false,
         videoShow: false,
         autoscroll: null,
     }
+
+
     
     componentWillUnmount() {
         if (this.state.autoscroll !== null) this.handleScroll()
@@ -43,8 +42,7 @@ export default class SheetController extends Component {
         this.handleSongChange(e)
         this.props.player.rand()
     }
-    
-    
+
     handleSongChange(e) {
         e.preventDefault();
         setTimeout(this.scrollTop);
@@ -66,18 +64,17 @@ export default class SheetController extends Component {
     scrollTop = () => window.scrollTo(0, 0)
 
     render() {
-        const {data, player, edit} = this.props;
+        const {data, edit} = this.props;
         const {videoShow, videoLoaded} = this.state;
         const {s} = data;
+        const link = s.getLink() + "?rel=0&modestbranding=1&playsinline=1"
 
         return (
             <Fragment>
-               
                 {!edit && <Sheet controller={this} {...this.props} />}
                 {edit && <Edit controller={this} {...this.props} />}
 
-                { s.link && <VideoCard show={videoShow} link={player.getYoutubeEmbed(s.link)} load={videoLoaded} onClick={this.handleVideoOpen} onLoad={this.handleVideoLoad}/>}
-                
+                { link && <VideoCard show={videoShow} link={link} load={videoLoaded} onClick={this.handleVideoOpen} onLoad={this.handleVideoLoad}/>}
             </Fragment>
         );
     }

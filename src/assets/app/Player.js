@@ -1,19 +1,17 @@
-import MusicTheory from './MusicTheory';
+import TagProvider from "./provider/TagProvider";
+import SongProvider from "./provider/SongProvider";
 
-import { getAllSongs, getSong } from '../../actions/songs';
-import Song from './object/Song';
-import { getAllTags } from '../../actions/tags';
 import history from '../../history';
 import queryString from 'query-string';
-
 import {
     AllStrategy,
     // LatestStrategy,
-    // ArtistStrategy,
-    // TagStrategy,
-    // LinkStrategy,
-    // RankStrategy,
-    // HistoryStrategy,
+    ArtistStrategy,
+    TagStrategy,
+    LinkStrategy,
+    RankStrategy,
+    HistoryStrategy,
+    LangStrategy,
     // CollectionStrategy
 } from './playlist/PlaylistStrategy';
 
@@ -26,37 +24,36 @@ class Player {
 
     constructor(component) {
         this.component = component;
-
-        this.me = ''; // User()
         
         this.songs = {};
         this.tags = {};
-
-        this.artist_like = [];
-        this.song_like = [];
-        this.user_follow = [];
         
         this.playlistStrategies = {};
         this.sorts = {};
         
         this.loaded = false;
-        this.init();
-        
+
         this.addStrategy(new AllStrategy(this))
-        // this.addStrategy(new ArtistStrategy(this,4))
-        // this.addStrategy(new RankStrategy(this))
-        // this.addStrategy(new TagStrategy(this, 5))
-        // this.addStrategy(new LinkStrategy(this))
-        // this.addStrategy(new HistoryStrategy(this))
-        
+        this.addStrategy(new ArtistStrategy(this,4))
+        this.addStrategy(new LangStrategy(this))
+        this.addStrategy(new TagStrategy(this, 5))
+        this.addStrategy(new RankStrategy(this))
+        this.addStrategy(new LinkStrategy(this))
+        this.addStrategy(new HistoryStrategy(this))
+
         this.addSorter(new BaseSorter());
+
+        this.init();
     }
     
     getSongsId() {
         return Object.keys(this.songs);
     }
-    getSongsData() {
+    getSongs() {
         return Object.values(this.songs);
+    }
+    getTags() {
+        return Object.values(this.tags);
     }
 
     _mapToDict(data, key) {
@@ -68,39 +65,28 @@ class Player {
 
     init = async (e) => {
         if (e) e.preventDefault()
-        
-        this.songs = await this.getAllSongs();
-        this.tags = await getAllTags();
+
+        this.songs = this._mapToDict(await SongProvider.getAll(), 'id');
+        this.tags = this._mapToDict(await TagProvider.getAll(), 'id');
+        this.getSongs().forEach(song => song.tags.forEach(tag => tag in this.tags ? this.tags[tag].addSong(song) : undefined))
         
         Object.values(this.playlistStrategies).forEach(strat => strat.makePlaylists())
         this.loaded = true;
+
         this.refreshComponent();
-    }
-    
-    async getAllSongs() {
-        const songs = await getAllSongs();
-        return this._mapToDict(songs.map(s => new Song(s)), 'id');
-    }
-    
-    async getSongLyrics(id) {
-        return (await getSong(id)).lyrics;
     }
 
     addStrategy(strategy) {
-        if (this.playlistStrategies[strategy.name]) return console.log('Strategy already exists')
+        if (strategy.name in this.playlistStrategies) return console.log('Strategy already exists')
         this.playlistStrategies[strategy.name] = strategy;
     }
-    
     removeStrategy(strategy) {
-        if (!this.playlistStrategies[strategy.name]) return console.log('Strategy not exist');
-
+        if (!(strategy.name in this.playlistStrategies)) return console.log('Strategy not exist');
         delete this.playlistStrategies[strategy.name];
     }
-    
     getStrategies() {
         return Object.values(this.playlistStrategies);
     }
-    
     
     addSorter(sorter) {
         sorter.sorts.forEach(s => this.sorts[s.id]? console.log('Already in list'): this.sorts[s.id] = s);
@@ -154,6 +140,7 @@ class Player {
 
     getQueryResult() {
         const {c, p, s} = queryString.parse(history.location.search);
+
         const collection = this._collection(c) || Object.values(this.playlistStrategies)[0];
         if (!collection) return false;
         const playlist = collection.getPlaylist(p);
@@ -166,12 +153,12 @@ class Player {
         return {c: collection, p: playlist, s: song};
     }
     
-    _prepareSong(song) {
-        if (!song.lyrics) getSong(song.id, (s) => {
-            song.lyrics = s.lyrics;
+    async _prepareSong(song) {
+        if (!song.lyrics) {
+            await song.loadLyrics()
             this.refreshComponent()
-        });
-    }
+        }
+    }s
 
     getQueryUrl({c, p, s, sort}) {
         const queries = []
@@ -213,17 +200,8 @@ class Player {
         history.push('/play/' + this.getQueryUrl({c, p, s}) + '&edit=true')
     }
 
-    transposeUp = (song) => this.transposeCount(song,1);
-    transposeDown = (song) => this.transposeCount(song, -1);
-
     transposeCount(song, count) {
-        if (!song.display) return;
-        song.transpose = MusicTheory.keepRangePlusNeg(song.transpose + count);
-        // SetTranspose
-        song.display = song.display.replace(
-            MusicTheory.rexNotes,
-            (full, note, ext) => MusicTheory.transposeNote(note, count) + ext
-        );
+        song.transpose(count)
         this.refreshComponent();
     }
 }

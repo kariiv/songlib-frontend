@@ -1,20 +1,46 @@
-export default class Tag {
+import TagProvider from "../provider/TagProvider";
+import DBObject from "./DBObject";
 
-    constructor({user_id, user_display, name, created_at}) {
-        this.userId = user_id;
-        this.userDisplay = user_display;
+export default class Tag extends DBObject {
+
+
+    constructor({id, name}) {
+        super(TagProvider, id)
         this.name = name;
-        this.createdAt = created_at;
-        
+        this.createdAt = 0;
+
         this.songs = []
     }
-    
+
+    setName(name) {
+        this.name = name;
+    }
+    getName() {
+        return this.name;
+    }
     getSongs() {
-        return
+        return this.songs;
     }
 
     addSong(song) {
-        if (this.songs.find(s => s.id === song.id)) return console.log('Song already listed')
+        if (this.songs.indexOf(song) !== -1) return
         this.songs.push(song);
+        song.addTag(this)
+    }
+    removeSong(song) {
+        const index = this.songs.indexOf(song)
+        if (index === -1) return
+        this.songs.splice(index, 1);
+        song.removeTag(this)
+    }
+
+
+    getObject() {
+        const obj = {}
+        obj["id"] = this.id
+        obj["name"] = this.name
+        obj["createdAt"] = this.createdAt
+
+        return obj
     }
 }

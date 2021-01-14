@@ -18,7 +18,6 @@ class Toolbar extends Component {
     }
 
     handleKeyDown = (e) => {
-        console.log(e.keyCode)
         if (!this.state.search) return
         switch( e.keyCode ) {
             case Toolbar.UP:
