@@ -67,7 +67,8 @@ export default class SheetController extends Component {
         const {data, edit} = this.props;
         const {videoShow, videoLoaded} = this.state;
         const {s} = data;
-        const link = s.getLink() + "?rel=0&modestbranding=1&playsinline=1"
+        let link = s.getLink()
+        if (link) link += "?rel=0&modestbranding=1&playsinline=1"
 
         return (
             <Fragment>
