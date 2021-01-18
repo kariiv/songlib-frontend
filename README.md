@@ -1,6 +1,6 @@
 ## [LIVE](https://sl2.netlify.com/) 
 
-# Song collecting app
+# Songs with Tabs collection app
 
 New version of forntend with updated backend.
 
