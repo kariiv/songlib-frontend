@@ -49,4 +49,4 @@ You will also see any lint errors in the console.
 
 ## Images...
 
-![Landing](https://drive.google.com/file/d/1sitFKDJgtRtppOMLHrZEYpR_U7djn7P7)
+![Landing](https://drive.google.com/uc?export=view&id=1sitFKDJgtRtppOMLHrZEYpR_U7djn7P7)
