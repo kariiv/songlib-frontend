@@ -1,11 +1,14 @@
-# Song collecting app
+## [LIVE](https://sl2.netlify.com/) 
+
+# Songs with Tabs collection app
 
 New version of forntend with updated backend.
 
 ## Features
 
-- Title, Author, Lyrics, Link, Tags, Rank(difficulty), Time
-- Create/Edit/Delete song
+- SONG: Title, Author, Lyrics, Link, Lang, Tags, Rank(difficulty), Time
+- Create/Edit/Delete Song
+- Create/Edit/Delete Tag
 - Local history
 - Autoscroll
 - Transpose
@@ -27,13 +30,7 @@ New version of forntend with updated backend.
 
 ## Todo
 
-- Create/Edit/Delete tag
-- Messages
-- Create/Edit/Delete collection
-- Add songs to collection
-- Remove songs from collection
 - Playlist strategies:
-  - Collection
   - WordCountSorter (Future)
 
 ## Available Scripts
@@ -50,8 +47,20 @@ You will also see any lint errors in the console.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Images...
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+<a href="https://drive.google.com/uc?export=view&id=1sitFKDJgtRtppOMLHrZEYpR_U7djn7P7">
+  <img src="https://drive.google.com/uc?export=view&id=1sitFKDJgtRtppOMLHrZEYpR_U7djn7P7" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
+</a>
+
+<a href="https://drive.google.com/uc?export=view&id=1Hou1CMNd-PP-20CFDG0AB2ZvKWgGXmiO">
+  <img src="https://drive.google.com/uc?export=view&id=1Hou1CMNd-PP-20CFDG0AB2ZvKWgGXmiO" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
+</a>
+
+<a href="https://drive.google.com/uc?export=view&id=1KRusgTyDtvWu1CYxBaR5MzNiLc5x9vm5">
+  <img src="https://drive.google.com/uc?export=view&id=1KRusgTyDtvWu1CYxBaR5MzNiLc5x9vm5" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
+</a>
+
+<a href="https://drive.google.com/uc?export=view&id=1prIKgdVqm6HfB1-_dlhoCMVPqISFnDKl">
+  <img src="https://drive.google.com/uc?export=view&id=1prIKgdVqm6HfB1-_dlhoCMVPqISFnDKl" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
+</a>
