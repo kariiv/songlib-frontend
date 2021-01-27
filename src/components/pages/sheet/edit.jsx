@@ -28,7 +28,11 @@ export default class Edit extends Component {
     dataFromUltimateGuitar = () => {
         getUGData((data) => {
             const { artist, lyrics, title } = data
-            this.setState({artist, title, lyrics})
+            const { song } = this.state
+            song.lyrics = lyrics
+            song.artist = artist
+            song.title = title
+            this.setState({song})
         })
     }
 
